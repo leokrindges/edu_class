@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 
 const config = {
 	envMode: process.env.MODE_ENV || 'development',
@@ -8,6 +9,8 @@ const config = {
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
+
+	app.use(cookieParser());
 
 	if (config.envMode === 'development') {
 		const swaggerConfig = new DocumentBuilder()
