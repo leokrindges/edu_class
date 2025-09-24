@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { Strategy, StrategyOptionsWithRequest } from 'passport-jwt';
+import { AuthService } from '../auth.service';
+import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
 function refreshCookieExtractor(req: Request) {
 	return req?.cookies?.['refresh_token'] ?? null;
@@ -12,7 +14,7 @@ export class RefreshJwtStrategy extends PassportStrategy(
 	Strategy,
 	'jwt-refresh',
 ) {
-	constructor() {
+	constructor(private readonly authService: AuthService) {
 		super({
 			jwtFromRequest: refreshCookieExtractor,
 			secretOrKey: process.env.JWT_REFRESH_SECRET,
@@ -20,8 +22,11 @@ export class RefreshJwtStrategy extends PassportStrategy(
 		} as StrategyOptionsWithRequest);
 	}
 
-	async validate(req: Request, payload: { sub: string; email: string }) {
-		const refreshToken = refreshCookieExtractor(req);
-		return { teacherId: payload.sub, email: payload.email, refreshToken };
+	async validate(req: Request, payload: JwtPayload) {
+		const teacher = await this.authService.getTeacherById(payload.sub);
+
+		if (!teacher) throw new UnauthorizedException();
+
+		return teacher;
 	}
 }

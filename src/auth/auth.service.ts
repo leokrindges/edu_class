@@ -19,7 +19,7 @@ export class AuthService {
 		const exists = await this.prisma.teacher.findUnique({ where: { email } });
 		if (exists) throw new BadRequestException('Email já cadastrado');
 
-		const passwordHash = await bcrypt.hash(password, 5);
+		const passwordHash = await bcrypt.hash(password, 10);
 		const teacher = await this.prisma.teacher.create({
 			data: { name, email, password: passwordHash },
 		});
@@ -53,9 +53,7 @@ export class AuthService {
 	}
 
 	async refresh(teacherId: string, refreshToken: string) {
-		const teacher = await this.prisma.teacher.findUnique({
-			where: { id: teacherId },
-		});
+		const teacher = await this.getTeacherById(teacherId);
 		if (!teacher || !teacher.refreshToken) throw new UnauthorizedException();
 
 		const matches = await bcrypt.compare(refreshToken, teacher.refreshToken);
@@ -85,10 +83,14 @@ export class AuthService {
 	}
 
 	private async saveRefreshHash(teacherId: string, refreshToken: string) {
-		const hash = await bcrypt.hash(refreshToken, 12);
+		const hash = await bcrypt.hash(refreshToken, 10);
 		await this.prisma.teacher.update({
 			where: { id: teacherId },
 			data: { refreshToken: hash },
 		});
+	}
+
+	async getTeacherById(id: string) {
+		return this.prisma.teacher.findUnique({ where: { id } });
 	}
 }

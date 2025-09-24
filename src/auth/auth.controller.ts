@@ -14,6 +14,7 @@ import { SignUpDto } from 'src/auth/dtos/sign-up.dto';
 import type { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { ApiTags } from '@nestjs/swagger';
+import { Teacher } from 'src/teacher/entities/teacher.entity';
 
 function cookieOpts() {
 	const secure = process.env.COOKIE_SECURE === 'true';
@@ -83,12 +84,11 @@ export class AuthController {
 	@UseGuards(RefreshJwtGuard)
 	@Post('refresh')
 	async refresh(
-		@CurrentTeacher() user: { id: string; email: string },
+		@CurrentTeacher() teacher: Teacher,
 		@Res({ passthrough: true }) res: Response,
 	) {
-		// O guard já validou e colocou user no request
 		const { accessToken, refreshToken } = await this.authService.refresh(
-			user.id,
+			teacher.id,
 			res.req.cookies['refresh_token'],
 		);
 		res.cookie('access_token', accessToken, {

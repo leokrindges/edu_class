@@ -9,6 +9,9 @@
 		"type": "git",
 		"url": "git+https://github.com/Leokrindges/edu_class.git"
 	},
+	"prisma": {
+		"seed": "ts-node prisma/seeders/base.seed.ts"
+	},
 	"scripts": {
 		"build": "nest build",
 		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -29,6 +32,7 @@
 		"sh": "docker compose exec api sh",
 		"prisma:generate": "npx prisma generate",
 		"prisma:push": "npx prisma db push",
+		"db:seed": "prisma db seed",
 		"prisma:migrate": "npx prisma migrate dev",
 		"prisma:reset": "npx prisma migrate reset --force",
 		"prisma:studio": "npx prisma studio",
