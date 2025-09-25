@@ -12,6 +12,11 @@ async function bootstrap() {
 
 	app.use(cookieParser());
 
+	app.enableCors({
+		origin: true,
+		credentials: true,
+	});
+
 	if (config.envMode === 'development') {
 		const swaggerConfig = new DocumentBuilder()
 			.setTitle('Edu Class API')

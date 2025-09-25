@@ -7,6 +7,9 @@ import {
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/database/prisma.service';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { SignUpDto } from './dtos/sign-up.dto';
+import { SignInDto } from './dtos/sign-in.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,82 +18,104 @@ export class AuthService {
 		private jwt: JwtService,
 	) {}
 
-	async signUp(name: string, email: string, password: string) {
-		const exists = await this.prisma.teacher.findUnique({ where: { email } });
+	async signUp(dto: SignUpDto) {
+		const { name, email, password, type } = dto;
+		const exists = await this.prisma.user.findUnique({ where: { email } });
 		if (exists) throw new BadRequestException('Email já cadastrado');
 
 		const passwordHash = await bcrypt.hash(password, 10);
-		const teacher = await this.prisma.teacher.create({
-			data: { name, email, password: passwordHash },
+		const user = await this.prisma.user.create({
+			data: { name, email, password: passwordHash, type },
 		});
 
-		const tokens = await this.issueTokens(teacher.id, teacher.email);
-		await this.saveRefreshHash(teacher.id, tokens.refreshToken);
+		const tokens = await this.issueTokens({
+			sub: user.id,
+			email: user.email,
+			type: user.type,
+		});
+		await this.saveRefreshHash(user.id, tokens.refreshToken);
 
-		return { teacher, ...tokens };
+		return { user, ...tokens };
 	}
 
-	async signIn(email: string, password: string) {
-		const teacher = await this.prisma.teacher.findUnique({ where: { email } });
-		if (!teacher) throw new UnauthorizedException('Credenciais inválidas');
+	async signIn(dto: SignInDto) {
+		const { email, password } = dto;
+		const user = await this.prisma.user.findUnique({ where: { email } });
+		if (!user) throw new UnauthorizedException('Credenciais inválidas');
 
-		const ok = await bcrypt.compare(password, teacher.password);
+		const ok = await bcrypt.compare(password, user.password);
 		if (!ok) throw new UnauthorizedException('Credenciais inválidas');
 
-		const tokens = await this.issueTokens(teacher.id, teacher.email);
-		await this.saveRefreshHash(teacher.id, tokens.refreshToken);
+		const tokens = await this.issueTokens({
+			sub: user.id,
+			email: user.email,
+			type: user.type,
+		});
+		await this.saveRefreshHash(user.id, tokens.refreshToken);
 		return {
-			teacher,
+			user,
 			...tokens,
 		};
 	}
 
-	async signOut(teacherId: string) {
-		await this.prisma.teacher.update({
-			where: { id: teacherId },
+	async signOut(userId: string) {
+		await this.prisma.user.update({
+			where: { id: userId },
 			data: { refreshToken: null },
 		});
 	}
 
-	async refresh(teacherId: string, refreshToken: string) {
-		const teacher = await this.getTeacherById(teacherId);
-		if (!teacher || !teacher.refreshToken) throw new UnauthorizedException();
+	async refresh(userId: string, refreshToken: string) {
+		try {
+			await this.jwt.verifyAsync(refreshToken, {
+				secret: process.env.JWT_REFRESH_SECRET,
+			});
+		} catch (err) {
+			throw new UnauthorizedException('Refresh token expirado ou inválido');
+		}
+		const user = await this.getUserById(userId);
+		if (!user || !user.refreshToken) throw new UnauthorizedException();
 
-		const matches = await bcrypt.compare(refreshToken, teacher.refreshToken);
+		const matches = await bcrypt.compare(refreshToken, user.refreshToken);
 		if (!matches) throw new UnauthorizedException();
 
-		const tokens = await this.issueTokens(teacher.id, teacher.email);
-		await this.saveRefreshHash(teacher.id, tokens.refreshToken);
+		const tokens = await this.issueTokens({
+			sub: user.id,
+			email: user.email,
+			type: user.type,
+		});
+		await this.saveRefreshHash(user.id, tokens.refreshToken);
 		return tokens;
 	}
 
-	private async issueTokens(sub: string, email: string) {
+	private async issueTokens(payload: JwtPayload) {
+		const { sub, email, type } = payload;
 		const access = await this.jwt.signAsync(
-			{ sub, email },
+			{ sub, email, type },
 			{
 				secret: process.env.JWT_ACCESS_SECRET,
-				expiresIn: Number(process.env.ACCESS_TOKEN_TTL) || 900,
+				expiresIn: Number(process.env.ACCESS_TOKEN_TTL),
 			},
 		);
 		const refresh = await this.jwt.signAsync(
-			{ sub, email },
+			{ sub, email, type },
 			{
 				secret: process.env.JWT_REFRESH_SECRET,
-				expiresIn: Number(process.env.REFRESH_TOKEN_TTL) || 604800,
+				expiresIn: Number(process.env.REFRESH_TOKEN_TTL),
 			},
 		);
 		return { accessToken: access, refreshToken: refresh };
 	}
 
-	private async saveRefreshHash(teacherId: string, refreshToken: string) {
+	private async saveRefreshHash(userId: string, refreshToken: string) {
 		const hash = await bcrypt.hash(refreshToken, 10);
-		await this.prisma.teacher.update({
-			where: { id: teacherId },
+		await this.prisma.user.update({
+			where: { id: userId },
 			data: { refreshToken: hash },
 		});
 	}
 
-	async getTeacherById(id: string) {
-		return this.prisma.teacher.findUnique({ where: { id } });
+	async getUserById(id: string) {
+		return this.prisma.user.findUnique({ where: { id } });
 	}
 }

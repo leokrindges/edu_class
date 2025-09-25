@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
 	IsEmail,
+	IsEnum,
 	IsNotEmpty,
 	IsString,
 	MaxLength,
 	MinLength,
 } from 'class-validator';
+import { UserType } from 'src/user/entities/user.entity';
 
 export class SignUpDto {
 	@ApiProperty({
@@ -34,4 +36,12 @@ export class SignUpDto {
 	@IsNotEmpty()
 	@MinLength(6)
 	password: string;
+
+	@ApiProperty({
+		description: 'Type of the user',
+		example: 'TEACHER',
+	})
+	@IsEnum(UserType)
+	@IsNotEmpty()
+	type: UserType;
 }

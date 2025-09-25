@@ -23,7 +23,11 @@ export class RefreshJwtStrategy extends PassportStrategy(
 	}
 
 	async validate(req: Request, payload: JwtPayload) {
-		const teacher = await this.authService.getTeacherById(payload.sub);
+		console.log('Payload recebido no RefreshJwtStrategy:', payload);
+		const refreshToken = refreshCookieExtractor(req);
+		if (!refreshToken) throw new UnauthorizedException('No refresh token');
+		console.log('Refresh token extraído:', refreshToken);
+		const teacher = await this.authService.getUserById(payload.sub);
 
 		if (!teacher) throw new UnauthorizedException();
 

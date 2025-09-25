@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './database/prisma.module';
 import { JwtService } from '@nestjs/jwt';
-import { APP_GUARD, Reflector } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { CookieJwtGuard } from './auth/decorators/auth.guard';
 import { AuthModule } from './auth/auth.module';
+import { RolePermissionInterceptor } from './interceptors/role.permission.interceptor';
 
 @Module({
 	imports: [
@@ -26,6 +27,10 @@ import { AuthModule } from './auth/auth.module';
 				new CookieJwtGuard(reflector, jwt),
 			inject: [Reflector, JwtService],
 		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: RolePermissionInterceptor,
+		}
 	],
 })
 export class AppModule {}
