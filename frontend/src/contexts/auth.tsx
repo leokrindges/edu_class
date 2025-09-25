@@ -1,5 +1,5 @@
-// lib/auth.tsx
 "use client";
+import { http } from "@/http-module/http-client";
 import React, {
   createContext,
   useCallback,
@@ -8,7 +8,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { apiFetch, postJson } from "../lib/api";
 
 interface AuthContextValue {
   status: "loading" | "authenticated" | "unauthenticated";
@@ -26,10 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
     (async () => {
       try {
-        const r = await apiFetch("/auth/refresh", {
-          method: "POST",
-          retry: false,
-        });
+        const r = await http.post("/auth/refresh");
         if (!mounted) return;
         setStatus(r.ok ? "authenticated" : "unauthenticated");
       } catch {
@@ -43,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const res = await postJson("/auth/signin", { email, password });
+    const res = await http.post("/auth/signin", { email, password });
     if (res.ok) {
       setStatus("authenticated");
       return true;
@@ -53,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    await apiFetch("/auth/signout", { method: "POST", retry: false });
+    await http.post("/auth/signout");
     setStatus("unauthenticated");
   }, []);
 
