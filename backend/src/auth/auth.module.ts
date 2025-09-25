@@ -10,6 +10,6 @@ import { AuthController } from './auth.controller';
 	imports: [JwtModule.register({})],
 	controllers: [AuthController],
 	providers: [AuthService, PrismaService, JwtStrategy, RefreshJwtStrategy],
-	exports: [],
+	exports: [AuthService],
 })
 export class AuthModule {}

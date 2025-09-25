@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	Get,
 	HttpCode,
 	Post,
 	Res,
@@ -101,5 +102,10 @@ export class AuthController {
 			maxAge: 1000 * Number(process.env.REFRESH_TOKEN_TTL),
 		});
 		return { ok: true };
+	}
+
+	@Get('me')
+	async me(@AuthUser() user: User) {
+		return user;
 	}
 }

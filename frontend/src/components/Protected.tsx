@@ -8,7 +8,6 @@ import { useEffect } from "react";
 export default function Protected({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
   const router = useRouter();
-    console.log("Auth status:", status);
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");

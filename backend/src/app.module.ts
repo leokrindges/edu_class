@@ -8,6 +8,7 @@ import { APP_GUARD, APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { CookieJwtGuard } from './auth/decorators/auth.guard';
 import { AuthModule } from './auth/auth.module';
 import { RolePermissionInterceptor } from './interceptors/role.permission.interceptor';
+import { AuthService } from './auth/auth.service';
 
 @Module({
 	imports: [
@@ -23,9 +24,9 @@ import { RolePermissionInterceptor } from './interceptors/role.permission.interc
 		JwtService,
 		{
 			provide: APP_GUARD,
-			useFactory: (reflector: Reflector, jwt: JwtService) =>
-				new CookieJwtGuard(reflector, jwt),
-			inject: [Reflector, JwtService],
+			useFactory: (reflector: Reflector, jwt: JwtService, authService: AuthService) =>
+				new CookieJwtGuard(reflector, jwt, authService),
+			inject: [Reflector, JwtService, AuthService],
 		},
 		{
 			provide: APP_INTERCEPTOR,

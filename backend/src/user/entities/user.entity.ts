@@ -1,7 +1,7 @@
 export class User {
 	readonly id: string;
 	readonly email: string;
-	readonly name: string;
+	name: string;
 	type: UserType;
 	readonly roleId: string;
 	isAdmin: boolean;

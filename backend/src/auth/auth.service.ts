@@ -116,6 +116,6 @@ export class AuthService {
 	}
 
 	async getUserById(id: string) {
-		return this.prisma.user.findUnique({ where: { id } });
+		return this.prisma.user.findUnique({ where: { id, deletedAt: null } });
 	}
 }

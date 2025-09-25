@@ -7,12 +7,14 @@ import {
 import { IS_PUBLIC_KEY } from './public.decorator';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class CookieJwtGuard implements CanActivate {
 	constructor(
 		private reflector: Reflector,
 		private jwt: JwtService,
+		private authService: AuthService,
 	) {}
 	async canActivate(ctx: ExecutionContext): Promise<boolean> {
 		const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -29,7 +31,10 @@ export class CookieJwtGuard implements CanActivate {
 			const payload = await this.jwt.verifyAsync(token, {
 				secret: process.env.JWT_ACCESS_SECRET,
 			});
-			req.user = { id: payload.sub, email: payload.email };
+			const user = await this.authService.getUserById(payload.sub);
+			if (!user) throw new UnauthorizedException();
+			const { password, refreshToken, ...userData } = user;
+			req.user = userData;
 			return true;
 		} catch {
 			throw new UnauthorizedException('Invalid or expired token');
