@@ -26,6 +26,16 @@ export class AuthService {
 		const passwordHash = await bcrypt.hash(password, 10);
 		const user = await this.prisma.user.create({
 			data: { name, email, password: passwordHash, type },
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				type: true,
+				createdAt: true,
+				isAdmin: true,
+				role: true,
+				updatedAt: true,
+			},
 		});
 
 		const tokens = await this.issueTokens({

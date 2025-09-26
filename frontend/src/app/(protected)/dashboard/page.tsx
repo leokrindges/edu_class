@@ -4,7 +4,6 @@ import { useAuth } from "@/contexts/auth";
 
 export default function DashboardPage() {
   const { signOut, user } = useAuth();
-  console.log("usuário", user);
   return (
     <Container sx={{ py: 6 }}>
       <Stack
