@@ -1,4 +1,5 @@
 "use client";
+import ResponsiveDrawer from "@/components/navigation/menu/Drawer";
 import Protected from "@/components/Protected";
 
 export default function ProtectedLayout({
@@ -6,5 +7,9 @@ export default function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Protected>{children}</Protected>;
+  return (
+    <Protected>
+      <ResponsiveDrawer>{children}</ResponsiveDrawer>
+    </Protected>
+  );
 }
