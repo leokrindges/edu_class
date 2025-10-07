@@ -18,6 +18,10 @@ async function main() {
 			password: userAdminPassword,
 			type: 'ADMIN',
 			isAdmin: true,
+			address: 'Rua dos bobos, 0',
+			phone: '1234567890',
+			avatar: 'https://i.pravatar.cc/300',
+			birthDate: new Date('1990-01-01'),
 		},
 		create: {
 			id: userId,
@@ -26,6 +30,10 @@ async function main() {
 			password: userAdminPassword,
 			type: 'ADMIN',
 			isAdmin: true,
+			address: 'Rua dos bobos, 0',
+			phone: '1234567890',
+			avatar: 'https://i.pravatar.cc/300',
+			birthDate: new Date('1990-01-01'),
 		},
 	});
 	const userTeacherPassword = await bcrypt.hash('123456', 10);
