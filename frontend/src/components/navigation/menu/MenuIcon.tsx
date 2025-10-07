@@ -1,7 +1,6 @@
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import EventIcon from "@mui/icons-material/Event";
 import SchoolIcon from "@mui/icons-material/School";
-import TimerTwoToneIcon from "@mui/icons-material/TimerTwoTone";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import SettingsIcon from "@mui/icons-material/Settings";
 import InboxIcon from "@mui/icons-material/Inbox";
