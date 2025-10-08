@@ -15,7 +15,7 @@ import { SignUpDto } from 'src/auth/dtos/sign-up.dto';
 import type { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from 'src/user/entities/user.entity';
+import { User } from 'src/user/models/user.model';
 
 function cookieOpts() {
 	const secure = process.env.COOKIE_SECURE === 'true';

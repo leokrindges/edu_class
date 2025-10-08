@@ -17,6 +17,10 @@ model User {
   id           String    @id @default(uuid())
   name         String    @db.VarChar(100)
   email        String    @unique @db.VarChar(100)
+  avatar       String?   @db.VarChar(255)
+  phone        String?   @unique @db.VarChar(15)
+  address      String?   @db.VarChar(255)
+  birthDate    DateTime? @map("data_nasc") @db.Date
   password     String    @db.VarChar(100)
   refreshToken String?   @map("refresh_token")
   type         UserType  @default(TEACHER)
@@ -30,6 +34,9 @@ model User {
   Permission Permission[]
 
   @@index([roleId])
+  @@index([email])
+  @@index([phone])
+  @@index([type])
   @@map("users")
 }
 
@@ -84,9 +91,9 @@ model RouteRole {
 }
 
 model RoutePermission {
-  permissionId String @map("permission_id")
-  routeId      String @map("route_id")
-  expiresIn    DateTime?   @map("expires_in") @db.Timestamp(3)
+  permissionId String    @map("permission_id")
+  routeId      String    @map("route_id")
+  expiresIn    DateTime? @map("expires_in") @db.Timestamp(3)
 
   permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
   routeRole  RouteRole  @relation(fields: [routeId], references: [id], onDelete: Cascade)
