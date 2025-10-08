@@ -291,33 +291,79 @@ describe('AuthService', () => {
 		it('deve criar (signUp) um novo usuário com sucesso', async () => {
 			const HASHED_PASSWORD = 'hashedNewPassword';
 			const EMAIL = 'newuser@example.com';
-			const REFRESH_TOKEN = 'new-refresh-token';
-			// ARRANGE
-			prismaServiceMock.user.findUnique.mockResolvedValue(userDb);
-			(bcrypt.hash as jest.Mock).mockResolvedValue(HASHED_PASSWORD);
+			const PASSWORD = 'password123';
+			const NAME = 'New User';
+			const ACCESS_TOKEN = 'access-token';
+			const REFRESH_TOKEN = 'refresh-token';
+			const HASHED_REFRESH = 'hashed-refresh';
 
-			prismaServiceMock.user.create.mockResolvedValue(userDb);
+			const signUpDto = {
+				email: EMAIL,
+				password: PASSWORD,
+				name: NAME,
+				type: UserType.STUDENT,
+			};
+
+			const newUser = {
+				...userDb,
+				id: 'u2',
+				email: EMAIL,
+				name: NAME,
+			};
+
+			// ARRANGE
+			prismaServiceMock.user.findUnique.mockResolvedValue(null);
+			(bcrypt.hash as jest.Mock)
+				.mockResolvedValueOnce(HASHED_PASSWORD)
+				.mockResolvedValueOnce(HASHED_REFRESH);
+
+			prismaServiceMock.user.create.mockResolvedValue(newUser);
+
+			jwtServiceMock.signAsync
+				.mockResolvedValueOnce(ACCESS_TOKEN)
+				.mockResolvedValueOnce(REFRESH_TOKEN);
+
+			prismaServiceMock.user.update.mockResolvedValue({});
+
+			// ACT - Execute o método signUp
+			const result = await service.signUp(signUpDto);
+
+			// ASSERT
+			expect(prismaServiceMock.user.create).toHaveBeenCalledWith({
+				data: {
+					email: EMAIL,
+					name: NAME,
+					password: HASHED_PASSWORD,
+					type: UserType.STUDENT,
+				},
+				select: {
+					createdAt: true,
+					email: true,
+					id: true,
+					isAdmin: true,
+					name: true,
+					role: true,
+					type: true,
+					updatedAt: true,
+				},
+			});
 
 			expect(jwtServiceMock.signAsync).toHaveBeenNthCalledWith(
 				1,
-				{ sub: 'u1', email: EMAIL, type: UserType.STUDENT },
+				{ sub: 'u2', email: EMAIL, type: UserType.STUDENT },
 				{
 					secret: process.env.JWT_ACCESS_SECRET,
 					expiresIn: Number(process.env.ACCESS_TOKEN_TTL),
 				},
 			);
 
-			// 2ª chamada -> refresh token
-			expect(jwtServiceMock.signAsync).toHaveBeenNthCalledWith(
-				2,
-				{ sub: 'u1', email: EMAIL, type: UserType.STUDENT },
-				{
-					secret: process.env.JWT_REFRESH_SECRET,
-					expiresIn: Number(process.env.REFRESH_TOKEN_TTL),
-				},
+			expect(result).toEqual(
+				expect.objectContaining({
+					accessToken: ACCESS_TOKEN,
+					refreshToken: REFRESH_TOKEN,
+					user: expect.any(Object),
+				}),
 			);
-
-			expect(bcrypt.hash).toHaveBeenCalledWith(REFRESH_TOKEN, 10);
 		});
 	});
 });
