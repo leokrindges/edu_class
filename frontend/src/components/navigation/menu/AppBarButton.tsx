@@ -1,6 +1,7 @@
 import { Add, MenuBookOutlined, PersonAdd } from "@mui/icons-material";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-export function getAppBarButton(activeMenu: string) {
+export function getAppBarButton(activeMenu: string, router: AppRouterInstance) {
   switch (activeMenu) {
     case "Dashboard":
     case "Aulas":
@@ -14,7 +15,7 @@ export function getAppBarButton(activeMenu: string) {
       return {
         label: "Novo aluno",
         icon: <PersonAdd />,
-        onClick: () => alert("Criar novo aluno"),
+        onClick: () => router.push("/students/create"),
       };
     case "Disciplinas":
       return {

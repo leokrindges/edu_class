@@ -21,7 +21,7 @@ import { getMenuIcon } from "./MenuIcon";
 import { getAppBarButton } from "./AppBarButton";
 import { AppBarContent } from "./AppBarContent";
 import { DrawerFooter } from "./DrawerFooter";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
 const drawerWidth = 240;
@@ -52,6 +52,7 @@ export default function ResponsiveDrawer(props: Props) {
   const pathname = usePathname();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
+  const router = useRouter();
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -136,7 +137,7 @@ export default function ResponsiveDrawer(props: Props) {
     </Box>
   );
 
-  const appBarButton = getAppBarButton(currentItem.text);
+  const appBarButton = getAppBarButton(currentItem.text, router);
 
   return (
     <Box sx={{ display: "flex" }}>
