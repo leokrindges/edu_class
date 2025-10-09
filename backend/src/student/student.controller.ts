@@ -20,7 +20,7 @@ import {
 	StudentResponse,
 } from './reponse/student.response';
 
-const route = 'user';
+const route = 'students';
 @Controller(route)
 @ApiTags(route)
 export class StudentController {
@@ -31,12 +31,10 @@ export class StudentController {
 		@Query() query: FindAllQueryParamsDto,
 		@AuthUser() user: User,
 	): Promise<PaginatedStudentResponse> {
-		const {
-			data,
-			total,
-			page,
-			limit,
-		} = await this._studentService.findAll(query, user);
+		const { data, total, page, limit } = await this._studentService.findAll(
+			query,
+			user,
+		);
 
 		const students = StudentResponse.fromEntities(data);
 		return {

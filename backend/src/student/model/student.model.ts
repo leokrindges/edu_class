@@ -6,6 +6,8 @@ export class Student {
 	email: string | null;
 	phone: string | null;
 	notes: string | null;
+	birthDate: Date | null;
+	avatar: string | null;
 	status: StudentStatus;
 	createdAt: Date;
 	updatedAt: Date;
