@@ -9,7 +9,10 @@ import {
   StudentFormData,
   studentSchema,
 } from "@/schema/student/student.schema";
-import { formatPhone } from "@/utils/formatters";
+import {
+  formatPhone,
+  isoDateToInputDate,
+} from "@/utils/formatters";
 import FormContainer from "@/components/common/form/FormContainer";
 import FormSection from "@/components/common/form/FormSection";
 import FormField from "@/components/common/form/FormField";
@@ -17,12 +20,7 @@ import FormSelect from "@/components/common/form/FormSelect";
 import AvatarUpload from "@/components/common/AvatarUpload";
 import FormActions from "@/components/common/form/FormActions";
 import { StudentStatus } from "@/interfaces/student/student.interface";
-
-// Atualizar statusOptions para usar os valores do enum
-const statusOptions = [
-  { value: StudentStatus.ACTIVE, label: "Ativo" },
-  { value: StudentStatus.INACTIVE, label: "Inativo" },
-];
+import { studentStatusOptions } from "@/utils/student-status.util";
 
 interface StudentFormProps {
   title: string;
@@ -47,43 +45,45 @@ export default function StudentForm({
 }: StudentFormProps) {
   const [avatar, setAvatar] = useState<string | null>(null);
 
+  const toFormValues = (d?: Partial<StudentFormData>): StudentFormData => ({
+    name: d?.name ?? "",
+    email: d?.email ?? "",
+    phone: d?.phone ? formatPhone(d.phone) : "",
+    birthDate: d?.birthDate ? isoDateToInputDate(d.birthDate) : "",
+    address: d?.address ?? "",
+    status: d?.status ?? StudentStatus.ACTIVE,
+    notes: d?.notes ?? "",
+  });
+
   const {
     control,
     handleSubmit,
     reset,
-    formState: { isValid },
+    trigger,
+    formState: { isValid, isDirty },
   } = useForm<StudentFormData>({
     resolver: zodResolver(studentSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      birthDate: undefined,
-      address: "",
-      status: StudentStatus.ACTIVE,
-      notes: undefined,
-      ...initialData,
-    },
+    defaultValues: toFormValues(initialData),
     mode: "onChange",
   });
 
   useEffect(() => {
     if (initialData) {
-      reset({
-        name: "",
-        email: "",
-        phone: "",
-        birthDate: undefined,
-        address: "",
-        status: StudentStatus.ACTIVE,
-        notes: undefined,
-        ...initialData,
-      });
+      const values = toFormValues(initialData);
+      reset(values, { keepDirty: false, keepTouched: false });
+      Promise.resolve().then(() => trigger());
     }
-  }, [initialData, reset]);
+  }, [initialData, reset, trigger]);
 
   const onSubmitForm = async (data: StudentFormData) => {
-    await onSubmit(data, avatar);
+    const submitData = {
+      ...data,
+      phone: data.phone ? data.phone.replace(/\D/g, "") : undefined,
+      birthDate: data.birthDate,
+      notes: data.notes?.trim() ? data.notes : undefined,
+      address: data.address?.trim() ? data.address : undefined,
+    };
+    await onSubmit(submitData, avatar);
   };
 
   return (
@@ -124,6 +124,8 @@ export default function StudentForm({
                 name="phone"
                 control={control}
                 label="Telefone"
+                type="tel"
+                inputMode="numeric"
                 fullWidth
                 placeholder="(11) 99999-9999"
                 formatter={formatPhone}
@@ -164,7 +166,7 @@ export default function StudentForm({
                 name="status"
                 control={control}
                 label="Status"
-                options={statusOptions}
+                options={studentStatusOptions}
                 required
               />
             </Grid>
@@ -186,7 +188,7 @@ export default function StudentForm({
             <FormActions
               onCancel={onCancel}
               loading={loading}
-              disabled={!isValid}
+              disabled={!isDirty || !isValid}
               submitText={submitButtonText}
               fullWidth={true}
             />

@@ -73,7 +73,7 @@ export function useStudent(id: string) {
   return useQuery({
     queryKey: ["students", id],
     queryFn: () => studentService.findById(id),
-    enabled: !!id, // Só executa se o ID existir
+    enabled: !!id,
   });
 }
 

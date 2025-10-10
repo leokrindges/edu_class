@@ -42,7 +42,7 @@ export const studentSchema = z.object({
   notes: z
     .string()
     .max(500, "Observações devem ter no máximo 500 caracteres")
-    .optional(),
+    .optional().nullable(),
 });
 
 export type StudentFormData = z.infer<typeof studentSchema>;

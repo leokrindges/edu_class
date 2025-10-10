@@ -6,8 +6,9 @@ import {
   Box,
   Skeleton,
 } from "@mui/material";
-import { People, Person, PersonAdd } from "@mui/icons-material";
-import { useStudentStats } from "@/hooks/student/useStudentStats";
+import { Groups, HowToReg, PersonAdd } from "@mui/icons-material";
+import { alpha, useTheme } from "@mui/material/styles";
+import { useStudentStats } from "@/hooks/useStudentStats";
 
 interface StatCardProps {
   title: string;
@@ -17,22 +18,28 @@ interface StatCardProps {
 }
 
 function StatCard({ title, value, icon, color }: StatCardProps) {
+  const theme = useTheme();
+
   const colorMap = {
-    primary: "primary.main",
-    success: "success.main",
-    info: "info.main",
+    primary: theme.palette.primary.main,
+    success: theme.palette.success.main,
+    info: theme.palette.info.main,
   };
 
   return (
-    <Card sx={{ height: "100%" }}>
+    <Card>
       <CardContent>
-        <Box sx={{ display: "flex", alignItems: "center", }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
           <Box
             sx={{
-              borderRadius: 2,
-              bgcolor: `${colorMap[color]}15`,
+              p: 1.2,
+              borderRadius: 1,
+              bgcolor: alpha(colorMap[color], 0.15),
               color: colorMap[color],
               mr: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             {icon}
@@ -41,7 +48,7 @@ function StatCard({ title, value, icon, color }: StatCardProps) {
             {title}
           </Typography>
         </Box>
-        <Typography variant="h5" component="div" fontWeight="bold">
+        <Typography variant="h4" component="div" fontWeight="bold">
           {value.toLocaleString()}
         </Typography>
       </CardContent>
@@ -53,7 +60,7 @@ function StatCardSkeleton() {
   return (
     <Card sx={{ height: "100%" }}>
       <CardContent>
-        <Box sx={{ display: "flex", alignItems: "center", }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Skeleton
             variant="rectangular"
             width={40}
@@ -88,12 +95,12 @@ export default function StudentStatsCards() {
   }
 
   return (
-    <Grid container spacing={3} sx={{ mb: 2 }}>
+    <Grid container spacing={1} sx={{ mb: 2 }}>
       <Grid size={{ xs: 6, sm: 6, md: 4 }}>
         <StatCard
           title="Total de Alunos"
           value={stats.total}
-          icon={<People />}
+          icon={<Groups />}
           color="primary"
         />
       </Grid>
@@ -101,7 +108,7 @@ export default function StudentStatsCards() {
         <StatCard
           title="Alunos Ativos"
           value={stats.active}
-          icon={<Person />}
+          icon={<HowToReg />}
           color="success"
         />
       </Grid>

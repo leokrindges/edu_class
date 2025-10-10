@@ -76,6 +76,30 @@ export function formatDate(date: string | Date): string {
   return dateObj.toLocaleDateString("pt-BR");
 }
 
+export function isoDateToInputDate(
+  isoDate: string | null | undefined
+): string | undefined {
+  if (!isoDate) return undefined;
+
+  try {
+    return new Date(isoDate).toISOString().split("T")[0];
+  } catch {
+    return undefined;
+  }
+}
+
+export function inputDateToIsoDate(
+  inputDate: string | undefined
+): string | undefined {
+  if (!inputDate) return undefined;
+
+  try {
+    return new Date(inputDate + "T00:00:00.000Z").toISOString();
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Formata moeda brasileira
  */

@@ -21,6 +21,7 @@ export default function FormField<T extends FieldValues>({
   endIcon,
   formatter,
   rules,
+  type,
   ...textFieldProps
 }: FormFieldProps<T>) {
   return (
@@ -28,26 +29,50 @@ export default function FormField<T extends FieldValues>({
       name={name}
       control={control}
       rules={rules}
-      render={({ field, fieldState: { error } }) => (
-        <TextField
-          {...field}
-          {...textFieldProps}
-          label={label}
-          error={!!error}
-          helperText={error?.message}
-          onChange={(e) => {
-            const value = formatter
-              ? formatter(e.target.value)
-              : e.target.value;
-            field.onChange(value);
-          }}
-          InputProps={{
-            startAdornment: startIcon,
-            endAdornment: endIcon,
-            ...textFieldProps.InputProps,
-          }}
-        />
-      )}
+      render={({ field, fieldState: { error } }) => {
+        let displayValue = "";
+        const raw = field.value;
+
+        if (raw === null || raw === undefined) displayValue = "";
+        else if (
+          type === "date" &&
+          typeof raw === "string" &&
+          raw.includes("T")
+        )
+          displayValue = raw.split("T")[0];
+        else displayValue = String(raw);
+
+        if (type !== "date" && formatter && displayValue) {
+          displayValue = formatter(displayValue);
+        }
+
+        return (
+          <TextField
+            {...textFieldProps}
+            name={field.name}
+            value={displayValue}
+            label={label}
+            type={type}
+            error={!!error}
+            helperText={error?.message}
+            onBlur={field.onBlur}
+            onChange={(e) => {
+              let value = e.target.value;
+
+              if (formatter && value) {
+                value = formatter(value);
+              }
+
+              field.onChange(value);
+            }}
+            InputProps={{
+              startAdornment: startIcon,
+              endAdornment: endIcon,
+              ...textFieldProps.InputProps,
+            }}
+          />
+        );
+      }}
     />
   );
 }

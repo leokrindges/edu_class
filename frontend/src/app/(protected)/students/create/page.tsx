@@ -1,6 +1,6 @@
 "use client";
 
-import StudentForm from "@/components/forms/student/StudentForm";
+import StudentForm from "@/components/student/StudentForm";
 import { useCreateStudent } from "@/hooks/student/useStudentMutations";
 import { StudentDTO } from "@/services/student/dtos/student.dto";
 

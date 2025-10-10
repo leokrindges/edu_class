@@ -7,9 +7,11 @@ import {
   InputAdornment,
   IconButton,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import { Search, Clear } from "@mui/icons-material";
 import { StudentStatus } from "@/interfaces/student/student.interface";
+import { studentStatusOptions } from "@/utils/student-status.util";
 
 interface StudentFiltersProps {
   search: string;
@@ -19,12 +21,6 @@ interface StudentFiltersProps {
   onClearFilters: () => void;
   isSearching?: boolean;
 }
-
-const statusOptions = [
-  { value: "", label: "Todos os Status" },
-  { value: StudentStatus.ACTIVE, label: "Ativo" },
-  { value: StudentStatus.INACTIVE, label: "Inativo" },
-];
 
 export default function StudentFilters({
   search,
@@ -37,8 +33,8 @@ export default function StudentFilters({
   return (
     <Card sx={{ mb: 3 }}>
       <CardContent>
-        <Grid container spacing={3} alignItems="center">
-          <Grid size={{ xs: 12, md: 6 }}>
+        <Grid container spacing={1} alignItems="center">
+          <Grid size={{ xs: 12, sm: 6, md: 7 }}>
             <TextField
               fullWidth
               placeholder="Buscar por nome ou email..."
@@ -68,7 +64,7 @@ export default function StudentFilters({
               }}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid size={{ xs: 7, sm: 4, md: 3 }}>
             <TextField
               fullWidth
               select
@@ -80,27 +76,28 @@ export default function StudentFilters({
                 )
               }
             >
-              {statusOptions.map((option) => (
+              <MenuItem value="">Todos os Status</MenuItem>
+              {studentStatusOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
               ))}
             </TextField>
           </Grid>
-          <Grid size={{ xs: 12, md: 2 }}>
-            <IconButton
-              onClick={onClearFilters}
+          <Grid size={{ xs: 5, sm: 2, md: 2 }}>
+            <Button
+              fullWidth
+              variant="outlined"
               color="primary"
+              startIcon={<Clear />}
+              onClick={onClearFilters}
               sx={{
-                border: 1,
-                borderColor: "primary.main",
-                width: "100%",
                 height: 56,
                 borderRadius: 1,
               }}
             >
-              <Clear />
-            </IconButton>
+              Limpar
+            </Button>
           </Grid>
         </Grid>
       </CardContent>

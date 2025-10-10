@@ -2,10 +2,11 @@ export interface Student {
   id: string;
   name: string;
   email: string;
-  phone: string | null;
-  notes: string | null;
+  phone?: string;
+  notes?: string;
   status: StudentStatus;
-  avatar: string | null;
+  avatar?: string;
+  birthDate?: string;
   createdAt: string;
   updatedAt: string;
 }

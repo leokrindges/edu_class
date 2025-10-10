@@ -6,7 +6,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
   Avatar,
   Typography,
   Box,
@@ -15,6 +14,9 @@ import {
   MenuItem,
   Skeleton,
   Alert,
+  Stack,
+  Divider,
+  useMediaQuery,
 } from "@mui/material";
 import {
   MoreVert,
@@ -24,11 +26,13 @@ import {
   Person,
 } from "@mui/icons-material";
 import { useState } from "react";
+import { useTheme } from "@mui/material/styles";
 import { useDeleteStudent } from "@/hooks/student/useStudentMutations";
 import { Student } from "@/interfaces/student/student.interface";
 import { formatPhone } from "@/utils/formatters";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import { useConfirm } from "@/hooks/useConfirm";
+import StatusChip from "../common/StatusChip";
 
 interface StudentListProps {
   students: Student[];
@@ -111,32 +115,6 @@ function ActionsMenu({ student, onEdit, onView }: ActionsMenuProps) {
   );
 }
 
-function getStatusColor(status: string) {
-  switch (status) {
-    case "ACTIVE":
-      return "success";
-    case "INACTIVE":
-      return "default";
-    case "SUSPENDED":
-      return "error";
-    default:
-      return "default";
-  }
-}
-
-function getStatusLabel(status: string) {
-  switch (status) {
-    case "ACTIVE":
-      return "Ativo";
-    case "INACTIVE":
-      return "Inativo";
-    case "SUSPENDED":
-      return "Suspenso";
-    default:
-      return status;
-  }
-}
-
 function StudentListSkeleton() {
   return (
     <Card>
@@ -195,6 +173,129 @@ function StudentListSkeleton() {
   );
 }
 
+// ✅ Componente de Card para mobile
+function StudentCard({ student, onEdit, onView }: ActionsMenuProps) {
+  const { confirm, confirmProps } = useConfirm();
+  const deleteStudentMutation = useDeleteStudent();
+
+  const handleDelete = async () => {
+    const confirmed = await confirm({
+      title: "Excluir Estudante",
+      message: `Tem certeza que deseja excluir o estudante "${student.name}"? Esta ação não pode ser desfeita.`,
+      confirmText: "Excluir",
+      cancelText: "Cancelar",
+      variant: "danger",
+    });
+
+    if (confirmed) {
+      deleteStudentMutation.mutate(student.id);
+    }
+  };
+
+  return (
+    <>
+      <Card sx={{ mb: 2 }}>
+        <Box sx={{ p: 2 }}>
+          <Stack direction="row" alignItems="center" spacing={2} mb={2}>
+            <Avatar
+              src={student.avatar || undefined}
+              sx={{ bgcolor: "primary.main" }}
+            >
+              <Person />
+            </Avatar>
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography variant="subtitle1" fontWeight="bold">
+                {student.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {student.email}
+              </Typography>
+            </Box>
+            <StatusChip status={student.status} />
+          </Stack>
+
+          <Divider sx={{ mb: 2 }} />
+
+          <Stack spacing={1} mb={2}>
+            {student.phone && (
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="body2" color="text.secondary">
+                  Telefone:
+                </Typography>
+                <Typography variant="body2">
+                  {formatPhone(student.phone)}
+                </Typography>
+              </Box>
+            )}
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="body2" color="text.secondary">
+                Cadastrado em:
+              </Typography>
+              <Typography variant="body2">
+                {new Date(student.createdAt).toLocaleDateString("pt-BR")}
+              </Typography>
+            </Box>
+          </Stack>
+
+          <Stack direction="row" spacing={1} justifyContent="flex-end">
+            <IconButton size="small" onClick={() => onView(student)}>
+              <Visibility />
+            </IconButton>
+            <IconButton size="small" onClick={() => onEdit(student)}>
+              <Edit />
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={handleDelete}
+              sx={{ color: "error.main" }}
+            >
+              <Delete />
+            </IconButton>
+          </Stack>
+        </Box>
+      </Card>
+
+      <ConfirmDialog
+        {...confirmProps}
+        loading={deleteStudentMutation.isPending}
+      />
+    </>
+  );
+}
+
+// ✅ Skeleton para cards mobile
+function StudentCardSkeleton() {
+  return (
+    <Card sx={{ mb: 2 }}>
+      <Box sx={{ p: 2 }}>
+        <Stack direction="row" alignItems="center" spacing={2} mb={2}>
+          <Skeleton variant="circular" width={40} height={40} />
+          <Box sx={{ flexGrow: 1 }}>
+            <Skeleton variant="text" width="60%" height={24} />
+            <Skeleton variant="text" width="80%" height={20} />
+          </Box>
+          <Skeleton
+            variant="rectangular"
+            width={60}
+            height={24}
+            sx={{ borderRadius: 3 }}
+          />
+        </Stack>
+        <Divider sx={{ mb: 2 }} />
+        <Stack spacing={1} mb={2}>
+          <Skeleton variant="text" width="100%" height={20} />
+          <Skeleton variant="text" width="100%" height={20} />
+        </Stack>
+        <Stack direction="row" spacing={1} justifyContent="flex-end">
+          <Skeleton variant="circular" width={32} height={32} />
+          <Skeleton variant="circular" width={32} height={32} />
+          <Skeleton variant="circular" width={32} height={32} />
+        </Stack>
+      </Box>
+    </Card>
+  );
+}
+
 export default function StudentList({
   students,
   loading,
@@ -202,8 +303,23 @@ export default function StudentList({
   onEdit,
   onView,
 }: StudentListProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   if (loading) {
-    return <StudentListSkeleton />;
+    return (
+      <Box>
+        {isMobile ? (
+          <>
+            {[1, 2, 3].map((index) => (
+              <StudentCardSkeleton key={index} />
+            ))}
+          </>
+        ) : (
+          <StudentListSkeleton />
+        )}
+      </Box>
+    );
   }
 
   if (error) {
@@ -230,6 +346,23 @@ export default function StudentList({
     );
   }
 
+  // ✅ CONDIÇÃO: Cards em mobile/tablet, tabela em desktop
+  if (isMobile) {
+    return (
+      <Box>
+        {students.map((student) => (
+          <StudentCard
+            key={student.id}
+            student={student}
+            onEdit={onEdit}
+            onView={onView}
+          />
+        ))}
+      </Box>
+    );
+  }
+
+  // ✅ Tabela para desktop
   return (
     <Card>
       <TableContainer>
@@ -263,11 +396,7 @@ export default function StudentList({
                   {student.phone ? formatPhone(student.phone) : "-"}
                 </TableCell>
                 <TableCell>
-                  <Chip
-                    label={getStatusLabel(student.status)}
-                    color={getStatusColor(student.status)}
-                    size="small"
-                  />
+                  <StatusChip status={student.status} />
                 </TableCell>
                 <TableCell>
                   {new Date(student.createdAt).toLocaleDateString("pt-BR")}
