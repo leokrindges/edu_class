@@ -32,7 +32,7 @@ model User {
 
   role       Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)
   Permission Permission[]
-  Teacher    Teacher?
+  teacher    Teacher?
 
   @@index([roleId])
   @@index([email])
