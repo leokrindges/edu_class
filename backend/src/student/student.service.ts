@@ -42,8 +42,8 @@ export class StudentService {
 		return student;
 	}
 
-	async create(dto: CreateStudentDto): Promise<Student> {
-		return this._studentRepository.create(dto);
+	async create(dto: CreateStudentDto, user: User): Promise<Student> {
+		return this._studentRepository.create(dto, user);
 	}
 
 	async update(

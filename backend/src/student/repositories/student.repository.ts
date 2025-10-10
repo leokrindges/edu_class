@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { Student } from '../model/student.model';
 import { CreateStudentDto } from '../dtos/create-student.dto';
@@ -52,8 +52,18 @@ export class StudentRepository {
 		});
 	}
 
-	async create(data: CreateStudentDto): Promise<Student> {
-		return this._prisma.student.create({ data });
+	async create(data: CreateStudentDto, user: User): Promise<Student> {
+		if (!user.teacher) {
+			throw new BadRequestException('Usuário não é um professor');
+		}
+		const student = await this._prisma.student.create({ data });
+		await this._prisma.enrollment.create({
+			data: {
+				studentId: student.id,
+				teacherId: user.teacher.id,
+			},
+		});
+		return student;
 	}
 
 	async update(

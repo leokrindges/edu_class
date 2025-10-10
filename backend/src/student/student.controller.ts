@@ -57,8 +57,9 @@ export class StudentController {
 	@Post()
 	async create(
 		@Body() createStudentDto: CreateStudentDto,
+		@AuthUser() user: User,
 	): Promise<StudentResponse> {
-		const student = await this._studentService.create(createStudentDto);
+		const student = await this._studentService.create(createStudentDto, user);
 		return StudentResponse.fromEntity(student);
 	}
 
