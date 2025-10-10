@@ -7,7 +7,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import { People, Person, PersonAdd } from "@mui/icons-material";
-import { useStudentStats } from "@/hooks/useStudentStats";
+import { useStudentStats } from "@/hooks/student/useStudentStats";
 
 interface StatCardProps {
   title: string;

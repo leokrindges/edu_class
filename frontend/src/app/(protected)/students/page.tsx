@@ -1,13 +1,13 @@
 "use client";
 
-import { Container} from "@mui/material";
+import { Container } from "@mui/material";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import StudentStatsCards from "@/components/student/StudentStatsCards";
 import StudentFilters from "@/components/student/StudentFilters";
 import StudentList from "@/components/student/StudentList";
 import Pagination from "@/components/common/Pagination";
-import { useStudents } from "@/hooks/useStudentMutations";
+import { useStudents } from "@/hooks/student/useStudentMutations";
 import { useDebounce } from "@/hooks/useDebounce";
 import { usePagination } from "@/hooks/usePagination";
 import { Student, StudentStatus } from "@/interfaces/student/student.interface";

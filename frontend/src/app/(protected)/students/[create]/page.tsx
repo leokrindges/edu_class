@@ -1,13 +1,13 @@
 "use client";
 
 import StudentForm from "@/components/forms/student/StudentForm";
-import { useCreateStudent } from "@/hooks/useStudentMutations";
+import { useCreateStudent } from "@/hooks/student/useStudentMutations";
 import { StudentDTO } from "@/services/student/dtos/student.dto";
 
 export default function CreateStudentPage() {
   const createStudentMutation = useCreateStudent();
 
-    const handleSubmit = async (data: StudentDTO, avatar: string | null) => {
+  const handleSubmit = async (data: StudentDTO, avatar: string | null) => {
     createStudentMutation.mutate({ data, avatar });
   };
 

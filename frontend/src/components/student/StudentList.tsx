@@ -24,9 +24,11 @@ import {
   Person,
 } from "@mui/icons-material";
 import { useState } from "react";
-import { useDeleteStudent } from "@/hooks/useStudentMutations";
+import { useDeleteStudent } from "@/hooks/student/useStudentMutations";
 import { Student } from "@/interfaces/student/student.interface";
 import { formatPhone } from "@/utils/formatters";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
+import { useConfirm } from "@/hooks/useConfirm";
 
 interface StudentListProps {
   students: Student[];
@@ -45,6 +47,7 @@ interface ActionsMenuProps {
 function ActionsMenu({ student, onEdit, onView }: ActionsMenuProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const deleteStudentMutation = useDeleteStudent();
+  const { confirm, confirmProps } = useConfirm();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -64,13 +67,20 @@ function ActionsMenu({ student, onEdit, onView }: ActionsMenuProps) {
     handleClose();
   };
 
-  const handleDelete = () => {
-    if (
-      confirm(`Tem certeza que deseja excluir o estudante ${student.name}?`)
-    ) {
+  const handleDelete = async () => {
+    handleClose();
+
+    const confirmed = await confirm({
+      title: "Excluir Estudante",
+      message: `Tem certeza que deseja excluir o estudante "${student.name}"? Esta ação não pode ser desfeita.`,
+      confirmText: "Excluir",
+      cancelText: "Cancelar",
+      variant: "danger",
+    });
+
+    if (confirmed) {
       deleteStudentMutation.mutate(student.id);
     }
-    handleClose();
   };
 
   return (
@@ -92,6 +102,11 @@ function ActionsMenu({ student, onEdit, onView }: ActionsMenuProps) {
           Excluir
         </MenuItem>
       </Menu>
+
+      <ConfirmDialog
+        {...confirmProps}
+        loading={deleteStudentMutation.isPending}
+      />
     </>
   );
 }
