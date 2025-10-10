@@ -126,6 +126,9 @@ export class AuthService {
 	}
 
 	async getUserById(id: string) {
-		return this.prisma.user.findUnique({ where: { id, deletedAt: null } });
+		return this.prisma.user.findUnique({
+			where: { id, deletedAt: null },
+			include: { teacher: true },
+		});
 	}
 }
