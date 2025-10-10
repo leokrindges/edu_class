@@ -50,6 +50,7 @@ export class StudentController {
 		@Param('id') id: string,
 		@AuthUser() user: User,
 	): Promise<StudentResponse> {
+		console.log('Fetching student with ID:', id);
 		const student = await this._studentService.findById(id, user);
 		return StudentResponse.fromEntity(student);
 	}

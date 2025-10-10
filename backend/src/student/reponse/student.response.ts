@@ -7,6 +7,8 @@ export class StudentResponse {
 	email: string | null;
 	phone: string | null;
 	notes: string | null;
+	avatar?: string | null;
+	birthDate?: Date | null;
 	status: string;
 	createdAt: Date;
 	updatedAt: Date;
@@ -22,6 +24,8 @@ export class StudentResponse {
 			email: entity.email,
 			phone: entity.phone,
 			notes: entity.notes,
+			avatar: entity.avatar,
+			birthDate: entity.birthDate,
 			status: entity.status,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
