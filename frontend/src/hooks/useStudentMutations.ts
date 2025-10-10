@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { studentService } from "@/services/student/student.service";
 import { toast } from "react-hot-toast";
 import { StudentDTO } from "@/services/student/dtos/student.dto";
+import { FindAllQueryParamsDto } from "@/services/student/dtos/find-all-student-query.dto";
 
 export function useCreateStudent() {
   const router = useRouter();
@@ -60,17 +61,12 @@ export function useUpdateStudent() {
 }
 
 // Hook para buscar lista de estudantes
-// export function useStudents(params?: {
-//   page?: number;
-//   limit?: number;
-//   search?: string;
-//   status?: string;
-// }) {
-//   return useQuery({
-//     queryKey: ["students", params],
-//     queryFn: () => studentService.findAll(params),
-//   });
-// }
+export function useStudents(params?: FindAllQueryParamsDto) {
+  return useQuery({
+    queryKey: ["students", params],
+    queryFn: () => studentService.findAll(params),
+  });
+}
 
 // Hook para buscar um estudante específico
 export function useStudent(id: string) {
