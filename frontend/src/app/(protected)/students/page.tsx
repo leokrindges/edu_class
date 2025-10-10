@@ -1,52 +1,61 @@
 "use client";
 
-import { Container } from "@mui/material";
+import { Container} from "@mui/material";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import StudentStatsCards from "@/components/student/StudentStatsCards";
 import StudentFilters from "@/components/student/StudentFilters";
 import StudentList from "@/components/student/StudentList";
+import Pagination from "@/components/common/Pagination";
 import { useStudents } from "@/hooks/useStudentMutations";
 import { useDebounce } from "@/hooks/useDebounce";
+import { usePagination } from "@/hooks/usePagination";
 import { Student, StudentStatus } from "@/interfaces/student/student.interface";
 
 export default function StudentsPage() {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [status, setStatus] = useState<StudentStatus | undefined>();
-  const [page, setPage] = useState(1);
 
-  // ✅ Debounce da busca por 500ms
+  const {
+    page,
+    itemsPerPage,
+    handlePageChange,
+    handleItemsPerPageChange,
+    resetPagination,
+  } = usePagination({
+    initialPage: 1,
+    initialItemsPerPage: 10,
+  });
+
   const debouncedSearch = useDebounce(search, 500);
 
-  // ✅ Parâmetros da query com debounce aplicado
   const queryParams = useMemo(
     () => ({
       page,
-      limit: 1,
+      limit: itemsPerPage,
       search: debouncedSearch || undefined,
       status: status || undefined,
     }),
-    [page, debouncedSearch, status]
+    [page, itemsPerPage, debouncedSearch, status]
   );
 
   const { data, isLoading, error } = useStudents(queryParams);
 
-  // ✅ Resetar página quando filtros mudam
   const handleSearchChange = (newSearch: string) => {
     setSearch(newSearch);
-    setPage(1); // Voltar para primeira página
+    resetPagination();
   };
 
   const handleStatusChange = (newStatus: StudentStatus | undefined) => {
     setStatus(newStatus);
-    setPage(1); // Voltar para primeira página
+    resetPagination();
   };
 
   const handleClearFilters = () => {
     setSearch("");
     setStatus(undefined);
-    setPage(1);
+    resetPagination();
   };
 
   const handleEdit = (student: Student) => {
@@ -58,21 +67,18 @@ export default function StudentsPage() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Cards de Estatísticas */}
+    <Container maxWidth="xl" sx={{ py: 2 }}>
       <StudentStatsCards />
 
-      {/* Filtros */}
       <StudentFilters
-        search={search} // ✅ Valor imediato (sem debounce) para UX responsiva
+        search={search}
         status={status}
         onSearchChange={handleSearchChange}
         onStatusChange={handleStatusChange}
         onClearFilters={handleClearFilters}
-        isSearching={search !== debouncedSearch} // ✅ Indicador de busca
+        isSearching={search !== debouncedSearch}
       />
 
-      {/* Lista de Estudantes */}
       <StudentList
         students={data?.data || []}
         loading={isLoading}
@@ -80,6 +86,19 @@ export default function StudentsPage() {
         onEdit={handleEdit}
         onView={handleView}
       />
+
+      {!isLoading && data && (
+        <Pagination
+          currentPage={page}
+          totalItems={data.total}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+          itemsPerPageOptions={[5, 10, 20, 50]}
+          showItemCount={true}
+          showItemsPerPage={true}
+        />
+      )}
     </Container>
   );
 }
