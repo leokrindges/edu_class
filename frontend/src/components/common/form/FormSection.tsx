@@ -1,0 +1,32 @@
+import { Typography, Divider, Grid } from "@mui/material";
+import { ReactNode } from "react";
+
+interface FormSectionProps {
+  title: string;
+  icon?: ReactNode;
+  children: ReactNode;
+  spacing?: number;
+}
+
+export default function FormSection({
+  title,
+  icon,
+  children,
+  spacing = 3,
+}: FormSectionProps) {
+  return (
+    <Grid container spacing={spacing}>
+      <Grid size={12}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, mt: 2, display: "flex", alignItems: "center" }}
+        >
+          {icon && <>{icon}</>}
+          {title}
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
+      </Grid>
+      {children}
+    </Grid>
+  );
+}

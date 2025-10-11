@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserType } from '@prisma/client';
 import {
 	IsEmail,
 	IsEnum,
@@ -7,7 +8,6 @@ import {
 	MaxLength,
 	MinLength,
 } from 'class-validator';
-import { UserType } from 'src/user/entities/user.entity';
 
 export class SignUpDto {
 	@ApiProperty({

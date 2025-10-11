@@ -12,7 +12,7 @@ import { PERMISSION_KEY } from 'src/auth/decorators/permission.decorator';
 import { IS_PUBLIC_KEY } from 'src/auth/decorators/public.decorator';
 import { ROLES_KEY } from 'src/auth/decorators/route-role.decorator';
 import { PrismaService } from 'src/database/prisma.service';
-import { User } from 'src/user/entities/user.entity';
+import { User } from 'src/user/models/user.model';
 
 @Injectable()
 export class RolePermissionInterceptor {

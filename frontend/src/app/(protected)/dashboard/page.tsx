@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/auth";
 export default function DashboardPage() {
   const { signOut, user } = useAuth();
   return (
-    <Container sx={{ py: 6 }}>
+    <Container>
       <Stack
         direction="row"
         justifyContent="space-between"
