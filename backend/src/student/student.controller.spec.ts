@@ -16,12 +16,14 @@ describe('StudentController', () => {
 		name: 'Test Student',
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		avatar: null,
+		birthDate: null,
 		notes: null,
 		phone: null,
 		status: 'ACTIVE',
 		deletedAt: null,
 	};
-
+ 
 	const mockUser: User = {
 		id: '1',
 		email: 'test@student.com',
@@ -116,10 +118,13 @@ describe('StudentController', () => {
 
 			mockStudentService.create.mockResolvedValue(mockStudent);
 
-			const result = await controller.create(createStudentDto);
+			const result = await controller.create(createStudentDto, mockUser);
 
 			expect(result).toEqual(StudentResponse.fromEntity(mockStudent));
-			expect(studentService.create).toHaveBeenCalledWith(createStudentDto);
+			expect(studentService.create).toHaveBeenCalledWith(
+				createStudentDto,
+				mockUser,
+			);
 		});
 	});
 

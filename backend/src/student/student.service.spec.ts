@@ -18,6 +18,8 @@ describe('StudentService', () => {
 		email: 'test@student.com',
 		notes: null,
 		phone: null,
+		avatar: null,
+		birthDate: null,
 		status: StudentStatus.ACTIVE,
 		createdAt: new Date(),
 		updatedAt: new Date(),
@@ -69,7 +71,10 @@ describe('StudentService', () => {
 	describe('findAll', () => {
 		it('should return paginated students', async () => {
 			const mockStudents = [mockStudent];
-			mockStudentRepository.findAll.mockResolvedValue({data: mockStudents, total: 1});
+			mockStudentRepository.findAll.mockResolvedValue({
+				data: mockStudents,
+				total: 1,
+			});
 			const result = await service.findAll({ page: 1, limit: 10 }, mockUser);
 			expect(result).toEqual({
 				data: mockStudents,
@@ -103,9 +108,12 @@ describe('StudentService', () => {
 				status: StudentStatus.ACTIVE,
 			};
 			mockStudentRepository.create.mockResolvedValue(mockStudent);
-			const result = await service.create(createStudentDto);
+			const result = await service.create(createStudentDto, mockUser);
 
-			expect(studentRepository.create).toHaveBeenCalledWith(createStudentDto);
+			expect(studentRepository.create).toHaveBeenCalledWith(
+				createStudentDto,
+				mockUser,
+			);
 			expect(result).toEqual(mockStudent);
 		});
 	});
