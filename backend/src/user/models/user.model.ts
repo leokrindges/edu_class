@@ -1,4 +1,5 @@
 import { UserType } from '@prisma/client';
+import { Teacher } from 'src/teacher/model/teacher.model';
 
 export class User {
 	readonly id: string;
@@ -15,4 +16,6 @@ export class User {
 	refreshToken: string | null;
 	createdAt: Date;
 	updatedAt: Date;
+	teacher?: Teacher;
+
 }

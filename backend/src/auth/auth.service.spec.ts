@@ -37,6 +37,13 @@ describe('AuthService', () => {
 		password: 'hashDaSenha',
 		refreshToken: null as string | null,
 		roleId: 'r1',
+		teacher: {
+			id: 't1',
+			userId: 'u1',
+			createdAt: now,
+			updatedAt: now,
+			subject: 'Math',
+		},
 	};
 
 	beforeAll(() => {
@@ -210,6 +217,7 @@ describe('AuthService', () => {
 			});
 			expect(prismaServiceMock.user.findUnique).toHaveBeenCalledWith({
 				where: { id: 'u1', deletedAt: null },
+				include: { teacher: true },
 			});
 			expect(bcrypt.compare).toHaveBeenCalledWith(REFRESH_IN, HASHED_REFRESH);
 

@@ -32,6 +32,7 @@ model User {
 
   role       Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)
   Permission Permission[]
+  teacher    Teacher?
 
   @@index([roleId])
   @@index([email])
@@ -46,6 +47,142 @@ enum UserType {
   ADMIN
 }
 
+model Student {
+  id String @id @default(uuid())
+
+  // login opcional (aluno pode acessar a plataforma)
+  // userId String? @unique
+  // user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name      String        @db.VarChar(150)
+  email     String?       @db.VarChar(100)
+  phone     String?       @db.VarChar(15)
+  avatar    String?       @db.VarChar(255)
+  birthDate DateTime?     @map("birth_date") @db.Date
+  notes     String?       @db.VarChar(255)
+  status    StudentStatus @default(ACTIVE)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+  deletedAt DateTime?     @map("deleted_at")
+
+  enrollments Enrollment[]
+  // lessons     Lesson[]
+  // payments    Payment[]
+
+  @@index([status])
+  @@index([deletedAt])
+  @@map("students")
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Teacher {
+  id        String    @id @default(uuid())
+  userId    String    @unique @map("user_id")
+  timezone  String    @default("America/Sao_Paulo")
+  currency  String    @default("BRL")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollments Enrollment[]
+  // lessons     Lesson[]
+  // payments    Payment[]
+
+  @@index([userId])
+  @@map("teachers")
+}
+
+model Enrollment {
+  id         String    @id @default(uuid())
+  teacherId  String    @map("teacher_id")
+  studentId  String    @map("student_id")
+  startedAt  DateTime  @default(now()) @map("started_at")
+  endedAt    DateTime? @map("ended_at")
+  priceCents Int?      @map("price_cents")
+  currency   String?   @map("currency")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, studentId])
+  @@index([teacherId])
+  @@index([studentId])
+  @@map("enrollments")
+}
+
+// model Lesson {
+//   id            String       @id @default(uuid())
+//   teacherId     String
+//   studentId     String
+
+//   enrollmentId  String?
+
+//   // Agenda
+//   startsAt      DateTime     // armazenar em UTC; converter no app p/ timezone do professor
+//   durationMin   Int
+//   status        LessonStatus @default(SCHEDULED)
+//   type          LessonType   @default(ONLINE)
+
+//   priceCents    Int?
+//   currency      String?
+//   location      String?
+//   meetingLink   String?
+//   notes         String?
+
+//   createdAt     DateTime     @default(now())
+//   updatedAt     DateTime     @updatedAt
+//   deletedAt     DateTime?
+
+//   teacher       Teacher      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+//   student       Student      @relation(fields: [studentId], references: [id], onDelete: Restrict)
+//   enrollment    Enrollment?  @relation(fields: [enrollmentId], references: [id], onDelete: SetNull)
+//   payments      Payment[]
+
+//   @@index([teacherId, startsAt])
+//   @@index([studentId, startsAt])
+//   @@index([status])
+//   @@index([deletedAt])
+//   @@unique([teacherId, studentId, startsAt]) // evita duplicar a mesma aula
+//   @@map("lessons")
+// }
+
+// model Payment {
+//   id          String         @id @default(uuid())
+//   teacherId   String
+//   studentId   String
+//   lessonId    String?        // pode ser avulso/pacote (sem aula específica)
+
+//   amountCents Int
+//   currency    String         @default("BRL")
+//   status      PaymentStatus  @default(PENDING)
+//   method      PaymentMethod?
+//   dueDate     DateTime?
+//   paidAt      DateTime?
+
+//   reference   String?        @unique // ex.: "2025-09#001"
+//   notes       String?
+
+//   createdAt   DateTime       @default(now())
+//   updatedAt   DateTime       @updatedAt
+//   deletedAt   DateTime?
+
+//   teacher     Teacher        @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+//   student     Student        @relation(fields: [studentId], references: [id], onDelete: Restrict)
+//   lesson      Lesson?        @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+
+//   @@index([teacherId, status])
+//   @@index([studentId, status])
+//   @@index([dueDate])
+//   @@index([deletedAt])
+//   @@map("payments")
+// }
+
 model Role {
   id          String       @id @default(uuid())
   name        String       @db.VarChar(100)
@@ -58,8 +195,8 @@ model Role {
   updatedBy   String       @default("9211c7fa-a41e-4da3-a92c-7fecc21d7efc") @map("updated_by") @db.VarChar(100)
   createdBy   String       @default("9211c7fa-a41e-4da3-a92c-7fecc21d7efc") @map("created_by") @db.VarChar(100)
   deletedBy   String?      @map("deleted_by") @db.VarChar(100)
-  Permission  Permission[]
-  User        User[]
+  permission  Permission[]
+  users       User[]
 
   @@map("roles")
 }

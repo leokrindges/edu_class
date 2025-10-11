@@ -4,8 +4,8 @@ import { randomUUID } from 'crypto';
 
 const _prisma = new PrismaClient();
 export const userId = 'admin_id_1234567890';
-export const userTeacherId = 'teacher_id_1234567890';
-export const userStudentId = 'student_id_1234567890';
+export const userTeacherId = 'user_teacher_id_1234567890';
+export const userStudentId = 'user_student_id_1234567890';
 
 async function main() {
 	const userAdminPassword = await bcrypt.hash('123456', 10);
@@ -58,6 +58,17 @@ async function main() {
 			name: 'Fulano de Tal',
 			password: userStudentPassword,
 			type: 'STUDENT',
+		},
+	});
+	const teacherId = 'teacher_id_1234567890';
+	await _prisma.teacher.upsert({
+		where: { id: teacherId },
+		update: {
+			userId: userTeacherId,
+		},
+		create: {
+			id: teacherId,
+			userId: userTeacherId,
 		},
 	});
 
