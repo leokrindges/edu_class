@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { RolePermissionInterceptor } from './interceptors/role.permission.interceptor';
 import { AuthService } from './auth/auth.service';
 import { StudentModule } from './student/student.module';
+import { DisciplineModule } from './discipline/discipline.module';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { StudentModule } from './student/student.module';
 		PrismaModule,
 		AuthModule,
 		StudentModule,
+		DisciplineModule,
 	],
 	controllers: [AppController],
 	providers: [
