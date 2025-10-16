@@ -40,9 +40,10 @@ describe('AuthService', () => {
 		teacher: {
 			id: 't1',
 			userId: 'u1',
+			currency: 'BRL',
+			timezone: 'America/Sao_Paulo',
 			createdAt: now,
 			updatedAt: now,
-			subject: 'Math',
 		},
 	};
 
