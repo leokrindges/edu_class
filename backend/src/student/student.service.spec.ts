@@ -1,47 +1,15 @@
 import { StudentStatus } from '@prisma/client';
-import { Student } from './model/student.model';
 import { StudentRepository } from './repositories/student.repository';
 import { StudentService } from './student.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from 'src/user/models/user.model';
 import { CreateStudentDto } from './dtos/create-student.dto';
-import { StudentResponse } from './reponse/student.response';
 import { NotFoundException } from '@nestjs/common';
+import { mockStudent } from 'src/test/student/student.mock';
+import { mockUser } from 'src/test/user/user.mock';
 
 describe('StudentService', () => {
 	let service: StudentService;
 	let studentRepository: StudentRepository;
-
-	const mockStudent: Student = {
-		id: '1',
-		name: 'Test Student',
-		email: 'test@student.com',
-		notes: null,
-		phone: null,
-		avatar: null,
-		birthDate: null,
-		status: StudentStatus.ACTIVE,
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		deletedAt: null,
-	};
-
-	const mockUser: User = {
-		id: '1',
-		email: 'itest@student.com',
-		name: 'Test User',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		type: 'STUDENT',
-		isAdmin: false,
-		password: 'hashedPassword',
-		avatar: null,
-		phone: null,
-		address: null,
-		birthDate: null,
-		roleId: null,
-		refreshToken: null,
-	};
 
 	const mockStudentRepository = {
 		findAll: jest.fn(),

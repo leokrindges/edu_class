@@ -5,41 +5,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CreateStudentDto } from './dtos/create-student.dto';
 import { StudentResponse } from './reponse/student.response';
 import { Student } from './model/student.model';
+import { mockStudent } from 'src/test/student/student.mock';
+import { mockUser } from 'src/test/user/user.mock';
 
 describe('StudentController', () => {
 	let controller: StudentController;
 	let studentService: StudentService;
-
-	const mockStudent: Student = {
-		id: '1',
-		email: 'test@student.com',
-		name: 'Test Student',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		avatar: null,
-		birthDate: null,
-		notes: null,
-		phone: null,
-		status: 'ACTIVE',
-		deletedAt: null,
-	};
- 
-	const mockUser: User = {
-		id: '1',
-		email: 'test@student.com',
-		password: 'hashedpassword',
-		avatar: null,
-		phone: null,
-		address: null,
-		birthDate: null,
-		name: 'Test User',
-		type: 'TEACHER',
-		roleId: null,
-		isAdmin: false,
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		refreshToken: null,
-	};
 
 	const mockStudentService = {
 		findAll: jest.fn(),
