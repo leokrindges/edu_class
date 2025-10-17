@@ -21,7 +21,7 @@ export function getAppBarButton(activeMenu: string, router: AppRouterInstance) {
       return {
         label: "Nova disciplina",
         icon: <MenuBookOutlined />,
-        onClick: () => alert("Criar nova matéria"),
+        onClick: () => router.push("/disciplines/create"),
       };
     default:
       return null;

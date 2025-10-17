@@ -6,6 +6,7 @@ interface FormSectionProps {
   icon?: ReactNode;
   children: ReactNode;
   spacing?: number;
+  size?: number;
 }
 
 export default function FormSection({
@@ -13,9 +14,10 @@ export default function FormSection({
   icon,
   children,
   spacing = 3,
+  size,
 }: FormSectionProps) {
   return (
-    <Grid container spacing={spacing}>
+    <Grid container spacing={spacing} size={size}>
       <Grid size={12}>
         <Typography
           variant="h6"

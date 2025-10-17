@@ -1,7 +1,7 @@
 "use client";
 import { Container, Stack, Typography } from "@mui/material";
 
-export default function SubjectsPage() {
+export default function DisciplinesPage() {
   return (
     <Container>
       <Stack
