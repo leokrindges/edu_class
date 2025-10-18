@@ -1,4 +1,5 @@
 "use client";
+import Pagination from "@/components/common/Pagination";
 import DisciplineFilters from "@/components/disciplines/DisciplineFilters";
 import DisciplineList from "@/components/disciplines/list/DisciplineList";
 import { useDisciplines } from "@/hooks/discipline/useDisciplineMutation";
@@ -66,6 +67,19 @@ export default function DisciplinesPage() {
         error={error}
         onEdit={handleEdit}
       />
+
+      {!isLoading && data && (
+        <Pagination
+          currentPage={page}
+          totalItems={data?.total}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+          itemsPerPageOptions={[5, 10, 20, 50]}
+          showItemCount={true}
+          showItemsPerPage={true}
+        />
+      )}
     </Container>
   );
 }
