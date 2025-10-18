@@ -1,5 +1,6 @@
 import { DisciplineDTO } from "@/services/disciplines/dtos/discipline.dto";
 import { disciplineService } from "@/services/disciplines/dtos/discipline.service";
+import { FindAllDisciplinesQueryParamsDto } from "@/services/disciplines/dtos/finl-all-query-params.dto";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -67,10 +68,10 @@ export function useDeleteDiscipline() {
   });
 }
 
-export function useDisciplines() {
+export function useDisciplines(queryParams?: FindAllDisciplinesQueryParamsDto) {
   return useQuery({
-    queryKey: ["disciplines"],
-    queryFn: () => disciplineService.findAll(),
+    queryKey: ["disciplines", queryParams],
+    queryFn: () => disciplineService.findAll(queryParams),
   });
 }
 

@@ -34,7 +34,7 @@ export default function DisciplineList({
   if (error) {
     return (
       <Alert severity="error">
-        Erro ao carregar estudantes: {error.message}
+        Erro ao carregar disciplinas: {error.message}
       </Alert>
     );
   }
@@ -47,10 +47,10 @@ export default function DisciplineList({
             sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
           />
           <Typography variant="h6" color="text.secondary">
-            Nenhum estudante encontrado
+            Nenhuma disciplina encontrada
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Tente ajustar os filtros ou adicionar um novo estudante
+            Tente ajustar os filtros ou adicionar uma nova disciplina
           </Typography>
         </Box>
       </Card>
