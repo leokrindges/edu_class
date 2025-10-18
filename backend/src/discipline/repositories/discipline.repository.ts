@@ -4,6 +4,8 @@ import { CreateDisciplineDTO } from '../dtos/create-discipline.dto';
 import { Discipline } from '../model/discipline.model';
 import { Teacher } from 'src/teacher/model/teacher.model';
 import { UpdateDisciplineDTO } from '../dtos/update-discipline.dto';
+import { FindAllQueryParamsDto } from '../dtos/find-all-query-params.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class DisciplineRepository {
@@ -35,13 +37,28 @@ export class DisciplineRepository {
 		});
 	}
 
-	async findAll(teacherId: string): Promise<Discipline[]> {
-		return this._prisma.discipline.findMany({
-			where: {
-				deletedAt: null,
-				teacherId,
-			},
-		});
+	async findAll(
+		teacherId: string,
+		query: FindAllQueryParamsDto,
+	): Promise<{ data: Discipline[]; total: number }> {
+		const { limit, page, search } = query;
+		const where: Prisma.DisciplineWhereInput = {
+			deletedAt: null,
+			teacherId,
+		};
+		if (search) where.name = { contains: search, mode: 'insensitive' };
+
+		const [data, total] = await this._prisma.$transaction([
+			this._prisma.discipline.findMany({
+				where,
+				skip: page && limit ? (page - 1) * limit : undefined,
+				take: limit,
+				orderBy: { createdAt: 'desc' },
+			}),
+			this._prisma.discipline.count({ where }),
+		]);
+
+		return { data, total };
 	}
 
 	async findTeachersByDisciplineId(

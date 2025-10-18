@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DisciplineController } from './discipline.cnotroller';
+import { DisciplineController } from './discipline.controller';
 import { DisciplineService } from './discipline.service';
 import { mockUser } from 'src/test/user/user.mock';
 import { mockDiscipline } from 'src/test/discipline/entities/discipline.entity.mock';
@@ -72,13 +72,24 @@ describe('DisciplineController', () => {
 	describe('findAll', () => {
 		it('should return all disciplines', async () => {
 			const mockDisciplines = [mockDiscipline];
-			mockDiciplineService.findAll.mockResolvedValue(mockDisciplines);
+			mockDiciplineService.findAll.mockResolvedValue({
+				data: mockDisciplines,
+				total: mockDisciplines.length,
+				page: 1,
+				limit: 10,
+			});
 
-			const result = await controller.findAll(mockUser);
+			const result = await controller.findAll({ limit: 10, page: 1 }, mockUser);
 
-			expect(result).toEqual(mockDisciplines);
+			expect(result).toEqual({
+				data: mockDisciplines,
+				total: mockDisciplines.length,
+				page: 1,
+				limit: 10,
+			});
 			expect(disciplineService.findAll).toHaveBeenCalledWith(
 				mockUser.teacher?.id!,
+				{ limit: 10, page: 1 },
 			);
 		});
 	});

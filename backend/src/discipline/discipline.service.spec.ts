@@ -71,10 +71,21 @@ describe('DisciplineService', () => {
 	describe('findAll', () => {
 		it('should return all disciplines for a teacher', async () => {
 			const mockDisciplines = [mockDiscipline];
-			mockDisciplineRepository.findAll.mockResolvedValue(mockDisciplines);
-			const result = await service.findAll('teacherId');
-			expect(result).toEqual(mockDisciplines);
-			expect(disciplineRepository.findAll).toHaveBeenCalledWith('teacherId');
+			mockDisciplineRepository.findAll.mockResolvedValue({
+				data: mockDisciplines,
+				total: mockDisciplines.length,
+			});
+			const result = await service.findAll('teacherId', { limit: 10, page: 1 });
+			expect(result).toEqual({
+				data: mockDisciplines,
+				total: mockDisciplines.length,
+				page: 1,
+				limit: 10,
+			});
+			expect(disciplineRepository.findAll).toHaveBeenCalledWith('teacherId', {
+				limit: 10,
+				page: 1,
+			});
 		});
 	});
 
