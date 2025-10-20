@@ -119,13 +119,16 @@ model Enrollment {
 }
 
 model Discipline {
-  id          String    @id @default(uuid())
-  name        String    @db.VarChar(100)
-  description String?   @db.VarChar(255)
-  teacherId   String    @map("teacher_id")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id            String    @id @default(uuid())
+  name          String    @db.VarChar(100)
+  description   String?   @db.VarChar(255)
+  teacherId     String    @map("teacher_id")
+  pricePerClass Decimal?  @map("price_per_class") @db.Decimal(10, 2)
+  currency      String?   @default("BRL") @db.VarChar(3)
+  durationMin   Int?      @map("duration_min")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
 
   teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 

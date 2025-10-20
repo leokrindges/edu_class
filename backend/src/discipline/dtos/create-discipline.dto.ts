@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+	IsNotEmpty,
+	IsNumber,
+	IsOptional,
+	IsString,
+	MaxLength,
+} from 'class-validator';
 
 export class CreateDisciplineDTO {
 	@ApiProperty({ example: 'Matemática', description: 'Name of the discipline' })
@@ -16,4 +22,14 @@ export class CreateDisciplineDTO {
 	@MaxLength(255)
 	@IsOptional()
 	description?: string;
+
+	@ApiProperty({ example: '50.00', description: 'Price per class' })
+	@IsOptional()
+	@IsNumber()
+	pricePerClass?: number;
+
+	@ApiProperty({ example: 60, description: 'Duration in minutes' })
+	@IsOptional()
+	@IsNumber()
+	durationMin?: number;
 }

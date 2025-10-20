@@ -5,36 +5,50 @@ import { Discipline } from '../model/discipline.model';
 import { Teacher } from 'src/teacher/model/teacher.model';
 import { UpdateDisciplineDTO } from '../dtos/update-discipline.dto';
 import { FindAllQueryParamsDto } from '../dtos/find-all-query-params.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, Discipline as PrismaDiscipline } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class DisciplineRepository {
 	constructor(private readonly _prisma: PrismaService) {}
 
+	private toDomain(d: PrismaDiscipline): Discipline {
+		return {
+			id: d.id,
+			name: d.name,
+			description: d.description,
+			teacherId: d.teacherId,
+			pricePerClass: d.pricePerClass !== null ? Number(d.pricePerClass) : null,
+			currency: d.currency,
+			durationMin: d.durationMin,
+			createdAt: d.createdAt,
+			updatedAt: d.updatedAt,
+			deletedAt: d.deletedAt,
+		};
+	}
+
 	async create(
 		dto: CreateDisciplineDTO,
 		teacherId: string,
 	): Promise<Discipline> {
-		return this._prisma.discipline.create({
+		const discipline = await this._prisma.discipline.create({
 			data: {
 				...dto,
-				teacher: {
-					connect: {
-						id: teacherId,
-					},
-				},
+				...(dto.pricePerClass !== undefined &&
+					dto.pricePerClass !== null && {
+						pricePerClass: new Decimal(dto.pricePerClass),
+					}),
+				teacher: { connect: { id: teacherId } },
 			},
 		});
+		return this.toDomain(discipline);
 	}
 
 	async findById(id: string, teacherId: string): Promise<Discipline | null> {
-		return this._prisma.discipline.findFirst({
-			where: {
-				id,
-				teacherId,
-				deletedAt: null,
-			},
+		const discipline = await this._prisma.discipline.findFirst({
+			where: { id, teacherId, deletedAt: null },
 		});
+		return discipline ? this.toDomain(discipline) : null;
 	}
 
 	async findAll(
@@ -45,8 +59,8 @@ export class DisciplineRepository {
 		const where: Prisma.DisciplineWhereInput = {
 			deletedAt: null,
 			teacherId,
+			...(search && { name: { contains: search, mode: 'insensitive' } }),
 		};
-		if (search) where.name = { contains: search, mode: 'insensitive' };
 
 		const [data, total] = await this._prisma.$transaction([
 			this._prisma.discipline.findMany({
@@ -58,7 +72,7 @@ export class DisciplineRepository {
 			this._prisma.discipline.count({ where }),
 		]);
 
-		return { data, total };
+		return { data: data.map((d) => this.toDomain(d)), total };
 	}
 
 	async findTeachersByDisciplineId(
@@ -77,10 +91,11 @@ export class DisciplineRepository {
 		dto: UpdateDisciplineDTO,
 		teacherId: string,
 	): Promise<Discipline> {
-		return this._prisma.discipline.update({
+		const discipline = await this._prisma.discipline.update({
 			where: { id, teacherId },
 			data: dto,
 		});
+		return this.toDomain(discipline);
 	}
 
 	async softDelete(id: string, teacherId: string): Promise<void> {

@@ -4,6 +4,10 @@ export class Discipline {
 	id: string;
 	name: string;
 	description: string | null;
+	teacherId: string;
+	pricePerClass: number | null;
+	currency: string | null;
+	durationMin: number | null;
 	createdAt: Date;
 	updatedAt: Date;
 	deletedAt: Date | null;
