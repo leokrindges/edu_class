@@ -33,7 +33,7 @@ import { formatPhone } from "@/utils/formatters";
 import { useConfirm } from "@/hooks/useConfirm";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import StatusChip from "@/components/common/StatusChip";
-import StudentSkeleton from "@/components/student/StudentSkeleton";
+import StudentSkeletonDetails from "@/components/student/StudentSkeletonDetails";
 
 export default function StudentViewPage() {
   const params = useParams();
@@ -73,7 +73,7 @@ export default function StudentViewPage() {
   if (isLoading) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <StudentSkeleton />
+        <StudentSkeletonDetails />
       </Container>
     );
   }

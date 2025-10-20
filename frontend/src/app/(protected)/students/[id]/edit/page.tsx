@@ -24,14 +24,14 @@ export default function EditStudentPage() {
       { id: studentId, data, avatar },
       {
         onSuccess: () => {
-          router.push(`/students/${studentId}`);
+          router.push(`/students`);
         },
       }
     );
   };
 
   const handleCancel = () => {
-    router.push(`/students/${studentId}`);
+    router.push(`/students`);
   };
 
   if (isLoading) {

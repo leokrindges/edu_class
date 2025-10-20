@@ -1,13 +1,14 @@
 import TableSkeleton from "@/components/common/TableSkeleton";
-export function StudentListSkeleton() {
+
+export function DisciplineListSkeleton() {
   return (
     <TableSkeleton
       rows={2}
       columns={[
-        { label: "Estudante" },
-        { label: "Email" },
-        { label: "Telefone", align: "right" },
-        { label: "Status", align: "right" },
+        { label: "Nome" },
+        { label: "Descrição" },
+        { label: "Preço por Aula", align: "right" },
+        { label: "Duração (min)", align: "right" },
         { label: "Data de Cadastro" },
         {
           label: "Ações",

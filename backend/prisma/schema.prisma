@@ -89,6 +89,7 @@ model Teacher {
 
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   enrollments Enrollment[]
+  disciplines Discipline[]
   // lessons     Lesson[]
   // payments    Payment[]
 
@@ -109,6 +110,7 @@ model Enrollment {
 
   teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  // lesson  Lesson[]
 
   @@unique([teacherId, studentId])
   @@index([teacherId])
@@ -116,40 +118,68 @@ model Enrollment {
   @@map("enrollments")
 }
 
+model Discipline {
+  id            String    @id @default(uuid())
+  name          String    @db.VarChar(100)
+  description   String?   @db.VarChar(255)
+  teacherId     String    @map("teacher_id")
+  pricePerClass Decimal?  @map("price_per_class") @db.Decimal(10, 2)
+  currency      String?   @default("BRL") @db.VarChar(3)
+  durationMin   Int?      @map("duration_min")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, name])
+  @@index([name])
+  @@index([teacherId])
+  @@index([deletedAt])
+  @@map("disciplines")
+}
+
 // model Lesson {
-//   id            String       @id @default(uuid())
-//   teacherId     String
-//   studentId     String
+//   id           String       @id @default(uuid())
+//   teacherId    String       @map("teacher_id")
+//   studentId    String       @map("student_id")
+//   enrollmentId String?      @map("enrollment_id")
+//   startsAt     DateTime     @map("starts_at")
+//   durationMin  Int          @map("duration_min")
+//   status       LessonStatus @default(SCHEDULED)
+//   type         LessonType   @default(ONLINE)
+//   priceCents   Int?         @map("price_cents")
+//   currency     String?
+//   location     String?
+//   meetingLink  String?      @map("meeting_link")
+//   notes        String?
+//   createdAt    DateTime     @default(now()) @map("created_at")
+//   updatedAt    DateTime     @updatedAt @map("updated_at")
+//   deletedAt    DateTime?    @map("deleted_at")
 
-//   enrollmentId  String?
+//   teacher    Teacher     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+//   student    Student     @relation(fields: [studentId], references: [id], onDelete: Restrict)
+//   enrollment Enrollment? @relation(fields: [enrollmentId], references: [id], onDelete: SetNull)
+//   // payments      Payment[]
 
-//   // Agenda
-//   startsAt      DateTime     // armazenar em UTC; converter no app p/ timezone do professor
-//   durationMin   Int
-//   status        LessonStatus @default(SCHEDULED)
-//   type          LessonType   @default(ONLINE)
-
-//   priceCents    Int?
-//   currency      String?
-//   location      String?
-//   meetingLink   String?
-//   notes         String?
-
-//   createdAt     DateTime     @default(now())
-//   updatedAt     DateTime     @updatedAt
-//   deletedAt     DateTime?
-
-//   teacher       Teacher      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-//   student       Student      @relation(fields: [studentId], references: [id], onDelete: Restrict)
-//   enrollment    Enrollment?  @relation(fields: [enrollmentId], references: [id], onDelete: SetNull)
-//   payments      Payment[]
-
+//   @@unique([teacherId, studentId, startsAt])
 //   @@index([teacherId, startsAt])
 //   @@index([studentId, startsAt])
 //   @@index([status])
 //   @@index([deletedAt])
-//   @@unique([teacherId, studentId, startsAt]) // evita duplicar a mesma aula
 //   @@map("lessons")
+// }
+
+// enum LessonStatus {
+//   SCHEDULED
+//   COMPLETED
+//   CANCELED
+//   MISSED
+// }
+
+// enum LessonType {
+//   ONLINE
+//   IN_PERSON
 // }
 
 // model Payment {
