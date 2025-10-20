@@ -23,7 +23,7 @@ export default function EditDisciplinePage() {
       { id: disciplineId, dto: data },
       {
         onSuccess: () => {
-          router.push(`/disciplines/${disciplineId}`);
+          router.push(`/disciplines`);
         },
       }
     );

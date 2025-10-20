@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormContainer from "../common/form/FormContainer";
-import { Grid } from "@mui/material";
+import { Grid, InputAdornment } from "@mui/material";
 import FormSection from "../common/form/FormSection";
 import FormField from "../common/form/FormField";
 import FormActions from "../common/form/FormActions";
@@ -105,7 +105,7 @@ export default function DisciplinesForm({
           <FormSection
             title="Valores e Duração"
             icon={<AttachMoney sx={{ mr: 1 }} />}
-            size={12}
+            size={{ xs: 12, sm: 6 }}
           >
             <Grid size={{ xs: 12, sm: 6 }}>
               <FormField
@@ -114,9 +114,10 @@ export default function DisciplinesForm({
                 label="Preço por Aula"
                 type="number"
                 fullWidth
-                startIcon={
-                  <AttachMoney sx={{ color: "action.active", mr: 1 }} />
-                }
+                slotProps={{
+                  htmlInput: { step: "0.10", min: 0, inputMode: "decimal" },
+                }}
+                startIcon={<InputAdornment position="start">R$</InputAdornment>}
               />
             </Grid>
 

@@ -1,12 +1,20 @@
 import { Typography, Divider, Grid } from "@mui/material";
 import { ReactNode } from "react";
 
+type ResponsiveSize = {
+  xs?: number;
+  sm?: number;
+  md?: number;
+  lg?: number;
+  xl?: number;
+};
+
 interface FormSectionProps {
   title: string;
   icon?: ReactNode;
   children: ReactNode;
   spacing?: number;
-  size?: number;
+  size?: number | ResponsiveSize;
 }
 
 export default function FormSection({
