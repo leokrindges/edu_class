@@ -10,7 +10,6 @@ export class User {
 	birthDate: Date | null;
 	name: string;
 	type: UserType;
-	readonly roleId: string | null;
 	isAdmin: boolean;
 	password: string;
 	refreshToken: string | null;

@@ -10,7 +10,6 @@ export const mockUser: User = {
 	birthDate: null,
 	name: 'Test User',
 	type: 'TEACHER',
-	roleId: null,
 	isAdmin: false,
 	createdAt: new Date(),
 	updatedAt: new Date(),

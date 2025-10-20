@@ -25,16 +25,12 @@ model User {
   refreshToken String?   @map("refresh_token")
   type         UserType  @default(TEACHER)
   isAdmin      Boolean   @default(false) @map("is_admin")
-  roleId       String?   @map("role_id")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
 
-  role       Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  Permission Permission[]
   teacher    Teacher?
 
-  @@index([roleId])
   @@index([email])
   @@index([phone])
   @@index([type])
@@ -212,68 +208,3 @@ model Discipline {
 //   @@index([deletedAt])
 //   @@map("payments")
 // }
-
-model Role {
-  id          String       @id @default(uuid())
-  name        String       @db.VarChar(100)
-  description String?      @db.VarChar(255)
-  color       String       @default("#000000") @db.VarChar(7)
-  expiresIn   DateTime?    @map("expires_in") @db.Timestamp(3)
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-  deletedAt   DateTime?    @map("deleted_at")
-  updatedBy   String       @default("9211c7fa-a41e-4da3-a92c-7fecc21d7efc") @map("updated_by") @db.VarChar(100)
-  createdBy   String       @default("9211c7fa-a41e-4da3-a92c-7fecc21d7efc") @map("created_by") @db.VarChar(100)
-  deletedBy   String?      @map("deleted_by") @db.VarChar(100)
-  permission  Permission[]
-  users       User[]
-
-  @@map("roles")
-}
-
-model Permission {
-  id         String  @id @default(uuid())
-  canRead    Boolean @default(true) @map("can_read")
-  canCreate  Boolean @default(false) @map("can_create")
-  canUpdate  Boolean @default(false) @map("can_update")
-  canDelete  Boolean @default(false) @map("can_delete")
-  canRestore Boolean @default(false) @map("can_restore")
-  roleId     String  @map("role_id")
-  userId     String? @map("user_id")
-
-  role            Role              @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  user            User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  routePermission RoutePermission[]
-
-  @@index([roleId])
-  @@map("permissions")
-}
-
-model RouteRole {
-  id              String            @id @default(uuid())
-  name            String            @db.VarChar(100)
-  RoutePermission RoutePermission[]
-
-  @@map("route_roles")
-}
-
-model RoutePermission {
-  permissionId String    @map("permission_id")
-  routeId      String    @map("route_id")
-  expiresIn    DateTime? @map("expires_in") @db.Timestamp(3)
-
-  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  routeRole  RouteRole  @relation(fields: [routeId], references: [id], onDelete: Cascade)
-
-  @@id([permissionId, routeId])
-  @@index([routeId])
-  @@map("route_permissions")
-}
-
-enum Action {
-  CREATE
-  READ
-  UPDATE
-  DELETE
-  RESTORE
-}

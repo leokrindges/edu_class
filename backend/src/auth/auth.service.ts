@@ -33,7 +33,6 @@ export class AuthService {
 				type: true,
 				createdAt: true,
 				isAdmin: true,
-				role: true,
 				updatedAt: true,
 			},
 		});
