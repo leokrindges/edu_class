@@ -1,11 +1,20 @@
 import { Typography, Divider, Grid } from "@mui/material";
 import { ReactNode } from "react";
 
+type ResponsiveSize = {
+  xs?: number;
+  sm?: number;
+  md?: number;
+  lg?: number;
+  xl?: number;
+};
+
 interface FormSectionProps {
   title: string;
   icon?: ReactNode;
   children: ReactNode;
   spacing?: number;
+  size?: number | ResponsiveSize;
 }
 
 export default function FormSection({
@@ -13,9 +22,10 @@ export default function FormSection({
   icon,
   children,
   spacing = 3,
+  size,
 }: FormSectionProps) {
   return (
-    <Grid container spacing={spacing}>
+    <Grid container spacing={spacing} size={size}>
       <Grid size={12}>
         <Typography
           variant="h6"

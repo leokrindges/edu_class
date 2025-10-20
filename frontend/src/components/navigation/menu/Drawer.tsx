@@ -31,7 +31,7 @@ const menuList = [
   { text: "Agenda", route: "/schedule" },
   { text: "Alunos", route: "/students" },
   { text: "Aulas", route: "/classes" },
-  { text: "Disciplinas", route: "/subjects" },
+  { text: "Disciplinas", route: "/disciplines" },
   { text: "Financeiro", route: "/financial" },
   { text: "Configurações", route: "/settings" },
 ];
