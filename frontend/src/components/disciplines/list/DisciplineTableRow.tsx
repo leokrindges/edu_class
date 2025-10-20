@@ -16,6 +16,8 @@ function DisciplineTableRowBase({
     <TableRow hover>
       <TableCell>{discipline.name}</TableCell>
       <TableCell>{discipline.description ?? "-"}</TableCell>
+      <TableCell>{discipline.pricePerClass ?? "-"}</TableCell>
+      <TableCell>{discipline.durationMin ?? "-"}</TableCell>
       <TableCell>
         {new Date(discipline.createdAt).toLocaleDateString("pt-BR")}
       </TableCell>

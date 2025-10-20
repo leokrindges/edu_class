@@ -11,7 +11,7 @@ import { Grid } from "@mui/material";
 import FormSection from "../common/form/FormSection";
 import FormField from "../common/form/FormField";
 import FormActions from "../common/form/FormActions";
-import { Description, Subject } from "@mui/icons-material";
+import { AttachMoney, Description, Subject, Timer } from "@mui/icons-material";
 
 interface DisciplineFormProps {
   title: string;
@@ -39,6 +39,8 @@ export default function DisciplinesForm({
   ): DisciplineFormData => ({
     name: d?.name ?? "",
     description: d?.description ?? undefined,
+    pricePerClass: d?.pricePerClass ?? undefined,
+    durationMin: d?.durationMin ?? undefined,
   });
 
   const {
@@ -97,6 +99,35 @@ export default function DisciplinesForm({
                 startIcon={
                   <Description sx={{ color: "action.active", mr: 1 }} />
                 }
+              />
+            </Grid>
+          </FormSection>
+          <FormSection
+            title="Valores e Duração"
+            icon={<AttachMoney sx={{ mr: 1 }} />}
+            size={12}
+          >
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormField
+                name="pricePerClass"
+                control={control}
+                label="Preço por Aula"
+                type="number"
+                fullWidth
+                startIcon={
+                  <AttachMoney sx={{ color: "action.active", mr: 1 }} />
+                }
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormField
+                name="durationMin"
+                control={control}
+                label="Duração (minutos)"
+                type="number"
+                fullWidth
+                startIcon={<Timer sx={{ color: "action.active", mr: 1 }} />}
               />
             </Grid>
           </FormSection>

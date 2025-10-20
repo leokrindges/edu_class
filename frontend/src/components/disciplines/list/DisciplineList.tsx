@@ -63,10 +63,12 @@ export default function DisciplineList({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ width: "30%" }}>Nome</TableCell>
-              <TableCell sx={{ width: "45%" }}>Descrição</TableCell>
+              <TableCell sx={{ width: "25%" }}>Nome</TableCell>
+              <TableCell sx={{ width: "35%" }}>Descrição</TableCell>
+              <TableCell sx={{ width: "10%" }}>Preço por Aula</TableCell>
+              <TableCell sx={{ width: "10%" }}>Duração (min)</TableCell>
               <TableCell sx={{ width: "15%" }}>Data de Cadastro</TableCell>
-              <TableCell align="right" sx={{ width: "10%" }}>
+              <TableCell align="right" sx={{ width: "5%" }}>
                 Ações
               </TableCell>
             </TableRow>

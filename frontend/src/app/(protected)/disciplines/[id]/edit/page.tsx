@@ -30,7 +30,7 @@ export default function EditDisciplinePage() {
   };
 
   const handleCancel = () => {
-    router.push(`/students/${disciplineId}`);
+    router.push(`/disciplines`);
   };
 
   if (isLoading) {
