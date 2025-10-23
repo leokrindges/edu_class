@@ -10,6 +10,7 @@ import { PrismaService } from 'src/database/prisma.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { SignInDto } from './dtos/sign-in.dto';
+import { UserType } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -24,17 +25,32 @@ export class AuthService {
 		if (exists) throw new BadRequestException('Email já cadastrado');
 
 		const passwordHash = await bcrypt.hash(password, 10);
-		const user = await this.prisma.user.create({
-			data: { name, email, password: passwordHash, type },
-			select: {
-				id: true,
-				name: true,
-				email: true,
-				type: true,
-				createdAt: true,
-				isAdmin: true,
-				updatedAt: true,
-			},
+
+		const user = await this.prisma.$transaction(async (tx) => {
+			const createdUser = await tx.user.create({
+				data: { name, email, password: passwordHash, type },
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					type: true,
+					createdAt: true,
+					isAdmin: true,
+					updatedAt: true,
+				},
+			});
+
+			if (type === UserType.STUDENT) {
+				await tx.student.create({
+					data: { name, email },
+				});
+			} else if (type === UserType.TEACHER) {
+				await tx.teacher.create({
+					data: { userId: createdUser.id },
+				});
+			}
+
+			return createdUser;
 		});
 
 		const tokens = await this.issueTokens({
