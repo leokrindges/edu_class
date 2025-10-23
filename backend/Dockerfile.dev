@@ -1,37 +1,22 @@
-# Dockerfile.dev
-FROM node:22-alpine
-WORKDIR /usr/src/app
-
-# Dependências para pacotes nativos (bcrypt) e Prisma
-RUN apk add --no-cache python3 make g++ bash libc6-compat openssl
-
-# Aproveita cache do Docker: instala deps só quando package.json muda
+# 1) Build
+FROM node:20-alpine AS builder
+WORKDIR /app
 COPY package*.json ./
 RUN npm ci
-
-# Copia configs de build e código
-COPY tsconfig*.json nest-cli.json ./
-COPY prisma ./prisma
-COPY src ./src
-
-# Copia o resto do projeto
 COPY . .
+RUN npm run build
 
-# Gera o Prisma Client (se já houver schema)/ignora erro se ainda não tem DB
-RUN npx prisma generate || true
-# Em dev, evite instalar Nest CLI global.
-# Use os scripts do package.json (nest já vem em devDependencies)
-
-# Variáveis que ajudam o watch no Windows/WSL
-ENV CHOKIDAR_USEPOLLING=true \
-    WATCHPACK_POLLING=true \
-    CHOKIDAR_INTERVAL=300
+# 2) Runtime
+FROM node:20-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=builder /app/dist ./dist
+# Se usar Prisma:
+COPY prisma ./prisma
+RUN npx prisma generate
 EXPOSE 3000
+# Migrações + start
+CMD sh -c "npx prisma migrate deploy && node dist/main.js"
 
-
-# Cria um usuário não-root para desenvolvimento
-# RUN addgroup -g 1001 -S nodejs
-# RUN adduser -S nestjs -u 1001
-# USER nestjs
-
-CMD ["npm", "run", "start:dev"]
