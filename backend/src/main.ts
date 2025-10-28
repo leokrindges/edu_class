@@ -5,7 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 
 const config = {
-	envMode: process.env.MODE_ENV || 'development',
+	envMode: process.env.NODE_ENV || 'development',
 };
 
 async function bootstrap() {
