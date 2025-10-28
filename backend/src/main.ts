@@ -23,7 +23,7 @@ async function bootstrap() {
 	app.use(cookieParser());
 
 	app.enableCors({
-		origin: true,
+		origin: ['https://edu-class-mocha.vercel.app'],
 		credentials: true,
 	});
 
