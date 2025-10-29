@@ -23,7 +23,7 @@ async function bootstrap() {
 	app.use(cookieParser());
 
 	app.enableCors({
-		origin: ['https://edu-class-mocha.vercel.app'],
+		origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
 		credentials: true,
 	});
 
@@ -40,6 +40,5 @@ async function bootstrap() {
 
 	const port = Number(process.env.PORT ?? 3000);
 	await app.listen(port, '0.0.0.0');
-
 }
 bootstrap();
