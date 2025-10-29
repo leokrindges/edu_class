@@ -8,6 +8,11 @@ const config = {
 	envMode: process.env.NODE_ENV || 'development',
 };
 
+const origins = (process.env.CORS_ORIGIN ?? '')
+	.split(',')
+	.map((s) => s.trim())
+	.filter(Boolean);
+
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 
@@ -20,12 +25,15 @@ async function bootstrap() {
 		}),
 	);
 
-	app.use(cookieParser());
-
 	app.enableCors({
-		origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+		origin: origins.length ? origins : [/^https?:\/\/localhost:\d+$/],
 		credentials: true,
+		methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-CSRF-Token'],
 	});
+
+	app.use(cookieParser());
+	// app.set('trust proxy', 1);
 
 	if (config.envMode === 'development') {
 		const swaggerConfig = new DocumentBuilder()

@@ -22,7 +22,7 @@ function cookieOpts() {
 	return {
 		httpOnly: true,
 		secure,
-		sameSite: secure ? ('strict' as const) : ('lax' as const),
+		sameSite: secure ? ('none' as const) : ('lax' as const),
 		path: '/',
 	};
 }
@@ -67,7 +67,7 @@ export class AuthController {
 			...cookieOpts(),
 			maxAge: 1000 * Number(process.env.REFRESH_TOKEN_TTL),
 		});
-		return { message: 'Teacher created', teacher: user };
+		return { message: 'User created', user: user };
 	}
 
 	@HttpCode(200)
@@ -77,8 +77,8 @@ export class AuthController {
 		@Res({ passthrough: true }) res: Response,
 	) {
 		await this.authService.signOut(user.id);
-		res.clearCookie('access_token', { path: '/' });
-		res.clearCookie('refresh_token', { path: '/' });
+		res.clearCookie('access_token', cookieOpts());
+		res.clearCookie('refresh_token', cookieOpts());
 		return { ok: true };
 	}
 
